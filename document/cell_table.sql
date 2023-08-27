@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS `cell`(
     `min_value` INT NOT NULL COMMENT 'min value',
     `max_value` INT NOT NULL COMMENT 'max value',
     `step` INT NOT NULL COMMENT 'step',
-    `create_time` TIMESTAMP NOT NULL COMMENT 'create time',
+    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-    CONSTRAINT pk_id PRIMARY KEY (`id`),
-    CONSTRAINT uk_name UNIQUE KEY (`name`)
-) COMMENT 'cell table'
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_name` (`name`)
+ ) COMMENT 'cell table'
 ;
