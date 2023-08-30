@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+  ~    Copyright 2021 lazycece<lazycece@gmail.com>
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.lazycece.cell</groupId>
     <artifactId>cell-parent</artifactId>
     <version>${revision}</version>
@@ -32,6 +45,10 @@
         </developer>
     </developers>
 
+    <modules>
+        <module>cell-core</module>
+    </modules>
+
     <properties>
         <!-- Project revision -->
         <revision>1.0.0-SNAPSHOT</revision>
@@ -43,8 +60,8 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>false</maven.javadoc.skip>
         <!-- Compiler settings properties -->
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <!-- Maven plugin -->
         <maven.compiler.plugin.version>3.6.2</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
@@ -57,12 +74,12 @@
 
     <profiles>
         <profile>
-            <id>jdk17</id>
+            <id>jdk8</id>
             <activation>
-                <jdk>[17,)</jdk>
+                <jdk>[1.8,)</jdk>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <!-- Disable doclint under JDK 17 -->
+            <!-- Disable doclint under JDK 1.8 -->
             <reporting>
                 <plugins>
                     <plugin>
