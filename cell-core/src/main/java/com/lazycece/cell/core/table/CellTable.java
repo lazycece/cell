@@ -14,18 +14,21 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.model;
+package com.lazycece.cell.core.table;
 
 import java.util.Date;
 
 /**
+ * The cell registry table.
+ *
  * @author lazycece
  * @date 2023/8/30
  */
-public class Cell {
+public class CellTable {
 
     private Integer id;
     private String name;
+    private String code;
     private Integer value;
     private Integer minValue;
     private Integer maxValue;
@@ -47,6 +50,14 @@ public class Cell {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public Integer getValue() {
