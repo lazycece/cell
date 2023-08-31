@@ -37,11 +37,11 @@ public class Cell {
     /**
      * The data center
      */
-    private Integer dataCenterId;
+    private Integer dataCenter;
     /**
      * The machine
      */
-    private Integer machineId;
+    private Integer machine;
     /**
      * The sequence
      */
@@ -63,20 +63,20 @@ public class Cell {
         this.date = date;
     }
 
-    public Integer getDataCenterId() {
-        return dataCenterId;
+    public Integer getDataCenter() {
+        return dataCenter;
     }
 
-    public void setDataCenterId(Integer dataCenterId) {
-        this.dataCenterId = dataCenterId;
+    public void setDataCenter(Integer dataCenter) {
+        this.dataCenter = dataCenter;
     }
 
-    public Integer getMachineId() {
-        return machineId;
+    public Integer getMachine() {
+        return machine;
     }
 
-    public void setMachineId(Integer machineId) {
-        this.machineId = machineId;
+    public void setMachine(Integer machine) {
+        this.machine = machine;
     }
 
     public Integer getSequence() {

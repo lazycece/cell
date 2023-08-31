@@ -16,75 +16,96 @@
 
 package com.lazycece.cell.core.spec;
 
+import com.lazycece.cell.core.exception.CellException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Define the cell specification .
- *
- * <p>date(8) + cellId(3) + center(1) + machine(2) + sequence(10)</p>
- * <p>For example: [20991231] [003] [0] [01] [0000000001]</p>
+ * <p>
+ * The length of cell-id is 24, and consists of the following information:
+ * <br/>
+ * date(8) + code(3) + center(1) + machine(2) + sequence(10).
+ * <br/>
+ * For example: [20991231] [003] [0] [01] [0000000001]
+ * </p>
  *
  * @author lazycece
- * @date 2023/8/30
+ * @date 2023/8/31
+ * @see Cell
  */
 public class CellSpec {
 
-    /**
-     * The production date
-     */
-    private String date;
-    /**
-     * The cell id
-     */
-    private String cellId;
-    /**
-     * The data center
-     */
-    private String dataCenter;
-    /**
-     * The machine
-     */
-    private String machine;
-    /**
-     * The cell sequence
-     */
-    private String sequence;
+    private static final int CELL_CODE_LEN = 3;
+    private static final int CELL_DATA_CENTER_LEN = 1;
+    private static final int CELL_MACHINE_LEN = 2;
+    private static final int CELL_SEQUENCE_LEN = 10;
 
-    public String getDate() {
-        return date;
+    public String cellId(Cell cell) {
+        String date = dateElement(cell.getDate());
+        String code = codeElement(cell.getCode());
+        String dataCenter = dataCenterElement(cell.getDataCenter());
+        String machine = machineElement(cell.getMachine());
+        String sequence = sequenceElement(cell.getSequence());
+        return String.format("%s%s%s%s%s", date, code, dataCenter, machine, sequence);
     }
 
-    public void setDate(String date) {
-        this.date = date;
+
+    private String dateElement(Date date) {
+        notNull(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        return sdf.format(date);
     }
 
-    public String getCellId() {
-        return cellId;
+    private String codeElement(String code) {
+        notBlank(code);
+        expectedLength(code, CELL_CODE_LEN);
+        return code;
     }
 
-    public void setCellId(String cellId) {
-        this.cellId = cellId;
+    private String dataCenterElement(Integer dataCenter) {
+        notNull(dataCenter);
+        expectedLength(String.valueOf(dataCenter), CELL_DATA_CENTER_LEN);
+        return fillElement(dataCenter, CELL_DATA_CENTER_LEN);
     }
 
-    public String getDataCenter() {
-        return dataCenter;
+    private String machineElement(Integer machine) {
+        notNull(machine);
+        expectedLength(String.valueOf(machine), CELL_MACHINE_LEN);
+        return fillElement(machine, CELL_MACHINE_LEN);
     }
 
-    public void setDataCenter(String dataCenter) {
-        this.dataCenter = dataCenter;
+    private String sequenceElement(Integer sequence) {
+        notNull(sequence);
+        expectedLength(String.valueOf(sequence), CELL_SEQUENCE_LEN);
+        return fillElement(sequence, CELL_SEQUENCE_LEN);
     }
 
-    public String getMachine() {
-        return machine;
+    private String fillElement(Integer element, int len) {
+        String value = String.valueOf(element);
+        int gap = len - value.length();
+        while (gap-- > 0) {
+            value = String.format("%s%s", 0, value);
+        }
+        return value;
     }
 
-    public void setMachine(String machine) {
-        this.machine = machine;
+    private static void notNull(Object element) {
+        if (element == null) {
+            throw new CellException("cell element is null");
+        }
     }
 
-    public String getSequence() {
-        return sequence;
+    private static void notBlank(String element) {
+        if (element == null || element.trim().length() == 0) {
+            throw new CellException("cell element is blank");
+        }
     }
 
-    public void setSequence(String sequence) {
-        this.sequence = sequence;
+    private static void expectedLength(String element, int len) {
+        if (element.length() != len) {
+            throw new CellException(String.format("cell element(%s) not expected length(%s)", element, len));
+        }
     }
 }
