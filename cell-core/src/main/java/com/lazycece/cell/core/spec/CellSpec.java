@@ -37,10 +37,17 @@ import java.util.Date;
  */
 public class CellSpec {
 
+    private static final String CELL_DATE_FORMAT = "yyyyMMdd";
     private static final int CELL_CODE_LEN = 3;
     private static final int CELL_DATA_CENTER_LEN = 1;
     private static final int CELL_MACHINE_LEN = 2;
     private static final int CELL_SEQUENCE_LEN = 10;
+
+    private static final CellSpec instance = new CellSpec();
+
+    public static CellSpec getInstance() {
+        return instance;
+    }
 
     public String cellId(Cell cell) {
         String date = dateElement(cell.getDate());
@@ -54,7 +61,7 @@ public class CellSpec {
 
     private String dateElement(Date date) {
         notNull(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf = new SimpleDateFormat(CELL_DATE_FORMAT);
         return sdf.format(date);
     }
 

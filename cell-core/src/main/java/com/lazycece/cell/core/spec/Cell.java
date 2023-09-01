@@ -86,4 +86,9 @@ public class Cell {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
+
+    @Override
+    public String toString() {
+        return CellSpec.getInstance().cellId(this);
+    }
 }

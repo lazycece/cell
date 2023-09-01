@@ -34,32 +34,32 @@ public class CellBuilder {
         return new CellBuilder(new Cell());
     }
 
-    private CellBuilder code(String code) {
+    public CellBuilder code(String code) {
         cell.setCode(code);
         return this;
     }
 
-    private CellBuilder date(Date date) {
+    public CellBuilder date(Date date) {
         cell.setDate(date);
         return this;
     }
 
-    private CellBuilder dataCenter(Integer dataCenter) {
+    public CellBuilder dataCenter(Integer dataCenter) {
         cell.setDataCenter(dataCenter);
         return this;
     }
 
-    private CellBuilder machine(Integer machine) {
+    public CellBuilder machine(Integer machine) {
         cell.setMachine(machine);
         return this;
     }
 
-    private CellBuilder sequence(Integer sequence) {
+    public CellBuilder sequence(Integer sequence) {
         cell.setSequence(sequence);
         return this;
     }
 
-    private Cell build() {
+    public Cell build() {
         return cell;
     }
 }
