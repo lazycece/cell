@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.table;
+package com.lazycece.cell.core.infra.table;
 
 import java.util.Date;
 
