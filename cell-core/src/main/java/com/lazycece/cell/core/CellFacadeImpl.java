@@ -22,5 +22,14 @@ package com.lazycece.cell.core;
  * @author lazycece
  * @date 2023/9/8
  */
-public class CellFacadeImpl {
+public class CellFacadeImpl implements CellFacade {
+
+    /**
+     * @see CellFacade#generateId
+     */
+    @Override
+    public String generateId(String name) {
+        // TODO: 2023/9/9
+        return null;
+    }
 }

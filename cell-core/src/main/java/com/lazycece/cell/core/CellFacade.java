@@ -24,5 +24,12 @@ package com.lazycece.cell.core;
  */
 public interface CellFacade {
 
+    /**
+     * Generate id.
+     *
+     * @param name cell's name
+     * @return id
+     */
+    String generateId(String name);
 
 }
