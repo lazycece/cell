@@ -14,26 +14,51 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.infra.table;
+package com.lazycece.cell.core.infra.dal.po;
 
 import java.util.Date;
 
 /**
- * The cell registry table.
- *
  * @author lazycece
- * @date 2023/8/30
+ * @date 2023/9/10
  */
-public class CellTable {
+public class CellTablePO {
 
+    /**
+     * pk id
+     */
     private Integer id;
+    /**
+     * cell name
+     */
     private String name;
+    /**
+     * cell code
+     */
     private String code;
+    /**
+     * current value
+     */
     private Integer value;
+    /**
+     * min value
+     */
     private Integer minValue;
+    /**
+     * max value
+     */
     private Integer maxValue;
+    /**
+     * the step, that the interval size of the value.
+     */
     private Integer step;
+    /**
+     * create time
+     */
     private Date createTime;
+    /**
+     * update time
+     */
     private Date updateTime;
 
     public Integer getId() {
