@@ -16,6 +16,8 @@
 
 package com.lazycece.cell.core;
 
+import com.lazycece.cell.core.domain.repository.CellTableRepository;
+
 /**
  * Cell facade service implement.
  *
@@ -24,11 +26,14 @@ package com.lazycece.cell.core;
  */
 public class CellFacadeImpl implements CellFacade {
 
+    private CellTableRepository cellTableRepository;
+
     /**
      * @see CellFacade#generateId
      */
     @Override
     public String generateId(String name) {
+
         // TODO: 2023/9/9
         return null;
     }
