@@ -14,37 +14,11 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.infra.repository;
-
-import com.lazycece.cell.core.model.CellTable;
+package com.lazycece.cell.core.daemon;
 
 /**
  * @author lazycece
  * @date 2023/9/9
  */
-public class CellTableRepositoryImpl implements CellTableRepository {
-
-    /**
-     * @see CellTableRepository#existCellTable()
-     */
-    @Override
-    public boolean existCellTable() {
-        return false;
-    }
-
-    /**
-     * @see CellTableRepository#queryByName
-     */
-    @Override
-    public CellTable queryByName(String name) {
-        return null;
-    }
-
-    /**
-     * @see CellTableRepository#updateByName
-     */
-    @Override
-    public boolean updateByName(String name) {
-        return false;
-    }
+public class CellTask {
 }

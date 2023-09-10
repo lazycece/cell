@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.spec;
+package com.lazycece.cell.core.model.spec;
 
 import java.util.Date;
 

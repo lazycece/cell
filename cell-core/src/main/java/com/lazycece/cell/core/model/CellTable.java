@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.domain.model;
+package com.lazycece.cell.core.model;
 
 import java.util.Date;
 

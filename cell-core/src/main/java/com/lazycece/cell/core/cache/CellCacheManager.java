@@ -14,37 +14,25 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.infra.repository;
+package com.lazycece.cell.core.cache;
 
 import com.lazycece.cell.core.model.CellTable;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author lazycece
  * @date 2023/9/9
  */
-public class CellTableRepositoryImpl implements CellTableRepository {
+public class CellCacheManager {
 
-    /**
-     * @see CellTableRepository#existCellTable()
-     */
-    @Override
-    public boolean existCellTable() {
-        return false;
+    private static final ConcurrentHashMap<String, CellTable> cacheMap = new ConcurrentHashMap<>();
+
+    public static void put(String name, CellTable cellTable) {
+        cacheMap.put(name, cellTable);
     }
 
-    /**
-     * @see CellTableRepository#queryByName
-     */
-    @Override
-    public CellTable queryByName(String name) {
-        return null;
-    }
-
-    /**
-     * @see CellTableRepository#updateByName
-     */
-    @Override
-    public boolean updateByName(String name) {
-        return false;
+    public static CellTable get(String name) {
+        return cacheMap.get(name);
     }
 }

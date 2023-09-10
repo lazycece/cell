@@ -14,9 +14,9 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.domain.repository;
+package com.lazycece.cell.core.infra.repository;
 
-import com.lazycece.cell.core.domain.model.CellTable;
+import com.lazycece.cell.core.model.CellTable;
 
 /**
  * @author lazycece

@@ -16,7 +16,7 @@
 
 package com.lazycece.cell.core;
 
-import com.lazycece.cell.core.domain.repository.CellTableRepository;
+import com.lazycece.cell.core.infra.repository.CellTableRepository;
 
 /**
  * Cell facade service implement.
