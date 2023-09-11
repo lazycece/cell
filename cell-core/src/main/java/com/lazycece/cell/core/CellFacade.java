@@ -16,6 +16,8 @@
 
 package com.lazycece.cell.core;
 
+import com.lazycece.cell.core.model.spec.CellType;
+
 /**
  * Cell facade service.
  *
@@ -31,5 +33,13 @@ public interface CellFacade {
      * @return id
      */
     String generateId(String name);
+
+    /**
+     * Generate id.
+     *
+     * @param cellType ${@link CellType}
+     * @return id
+     */
+    String generateId(CellType cellType);
 
 }

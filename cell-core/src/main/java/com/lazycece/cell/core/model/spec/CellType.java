@@ -14,36 +14,25 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core;
-
-import com.lazycece.cell.core.infra.repository.CellTableRepository;
-import com.lazycece.cell.core.model.spec.CellType;
+package com.lazycece.cell.core.model.spec;
 
 /**
- * Cell facade service implement.
- *
  * @author lazycece
- * @date 2023/9/8
+ * @date 2023/9/10
  */
-public class CellFacadeImpl implements CellFacade {
-
-    private CellTableRepository cellTableRepository;
+public interface CellType {
 
     /**
-     * @see CellFacade#generateId
+     * cell name.
+     *
+     * @return name
      */
-    @Override
-    public String generateId(String name) {
-
-        // TODO: 2023/9/9
-        return null;
-    }
+    String name();
 
     /**
-     * @see CellFacade#generateId
+     * cell code.
+     *
+     * @return code
      */
-    @Override
-    public String generateId(CellType cellType) {
-        return null;
-    }
+    String code();
 }
