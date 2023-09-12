@@ -16,23 +16,39 @@
 
 package com.lazycece.cell.core.cache;
 
-import com.lazycece.cell.core.model.CellTable;
-
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author lazycece
- * @date 2023/9/9
+ * @date 2023/9/11
  */
-public class CellCacheManager {
+public class CellCacheInfo {
 
-    private static final ConcurrentHashMap<String, CellCacheInfo> cacheMap = new ConcurrentHashMap<>();
+    /**
+     * cell name
+     */
+    private String name;
+    /**
+     * cell code
+     */
+    private String code;
+    /**
+     * current value
+     */
+    private AtomicInteger value;
+    /**
+     * min value
+     */
+    private Integer minValue;
+    /**
+     * max value
+     */
+    private Integer maxValue;
+    /**
+     * the step, that the interval size of the value.
+     */
+    private Integer step;
 
-    public static void put(String name, CellCacheInfo cellCacheInfo) {
-        cacheMap.put(name, cellCacheInfo);
-    }
-
-    public static CellCacheInfo get(String name) {
-        return cacheMap.get(name);
-    }
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 }
