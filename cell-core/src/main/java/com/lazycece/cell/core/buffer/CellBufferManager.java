@@ -14,41 +14,23 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.cache;
+package com.lazycece.cell.core.buffer;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author lazycece
- * @date 2023/9/11
+ * @date 2023/9/9
  */
-public class CellCacheInfo {
+public class CellBufferManager {
 
-    /**
-     * cell name
-     */
-    private String name;
-    /**
-     * cell code
-     */
-    private String code;
-    /**
-     * current value
-     */
-    private AtomicInteger value;
-    /**
-     * min value
-     */
-    private Integer minValue;
-    /**
-     * max value
-     */
-    private Integer maxValue;
-    /**
-     * the step, that the interval size of the value.
-     */
-    private Integer step;
+    private static final ConcurrentHashMap<String/*name*/, CellBuffer> cacheMap = new ConcurrentHashMap<>();
 
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    public static void put(String name, CellBuffer cellBuffer) {
+        cacheMap.put(name, cellBuffer);
+    }
+
+    public static CellBuffer get(String name) {
+        return cacheMap.get(name);
+    }
 }

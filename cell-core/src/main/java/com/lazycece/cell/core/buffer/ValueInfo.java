@@ -14,25 +14,18 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.cache;
+package com.lazycece.cell.core.buffer;
 
-import com.lazycece.cell.core.model.CellTable;
-
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author lazycece
- * @date 2023/9/9
+ * @date 2023/9/11
  */
-public class CellCacheManager {
+public class ValueInfo {
 
-    private static final ConcurrentHashMap<String, CellCacheInfo> cacheMap = new ConcurrentHashMap<>();
-
-    public static void put(String name, CellCacheInfo cellCacheInfo) {
-        cacheMap.put(name, cellCacheInfo);
-    }
-
-    public static CellCacheInfo get(String name) {
-        return cacheMap.get(name);
-    }
+    /**
+     * current value
+     */
+    private AtomicInteger value;
 }
