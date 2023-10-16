@@ -16,8 +16,15 @@
 
 package com.lazycece.cell.core;
 
+import com.lazycece.cell.core.buffer.CellBufferManager;
+import com.lazycece.cell.core.exception.CellException;
 import com.lazycece.cell.core.infra.repository.CellTableRepository;
+import com.lazycece.cell.core.model.CellConfig;
+import com.lazycece.cell.core.model.spec.Cell;
+import com.lazycece.cell.core.model.spec.CellBuilder;
 import com.lazycece.cell.core.model.spec.CellType;
+
+import java.util.Date;
 
 /**
  * Cell facade service implement.
@@ -28,22 +35,24 @@ import com.lazycece.cell.core.model.spec.CellType;
 public class CellFacadeImpl implements CellFacade {
 
     private CellTableRepository cellTableRepository;
-
-    /**
-     * @see CellFacade#generateId
-     */
-    @Override
-    public String generateId(String name) {
-
-        // TODO: 2023/9/9
-        return null;
-    }
+    private CellConfig cellConfig;
 
     /**
      * @see CellFacade#generateId
      */
     @Override
     public String generateId(CellType cellType) {
-        return null;
+        if (cellType == null) {
+            throw new CellException("invalid cell type.");
+        }
+        int value = CellBufferManager.getSequence(cellType.name());
+        Cell cell = CellBuilder.builder()
+                .code(cellType.code())
+                .date(new Date())
+                .dataCenter(cellConfig.dataCenter())
+                .machine(cellConfig.machine())
+                .sequence(value)
+                .build();
+        return cell.toString();
     }
 }

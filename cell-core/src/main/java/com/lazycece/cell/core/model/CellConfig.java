@@ -14,24 +14,33 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core;
+package com.lazycece.cell.core.model;
 
 import com.lazycece.cell.core.model.spec.CellType;
 
 /**
- * Cell facade service.
- *
  * @author lazycece
- * @date 2023/9/8
+ * @date 2023/10/16
  */
-public interface CellFacade {
+public interface CellConfig {
 
     /**
-     * Generate id.
-     *
-     * @param cellType ${@link CellType}
-     * @return cell id
+     * The data center
      */
-    String generateId(CellType cellType);
+    Integer dataCenter();
+
+    /**
+     * The machine
+     */
+    Integer machine();
+
+    /**
+     * The cell type
+     *
+     * @return see ${@link CellType}
+     */
+    default CellType cellType() {
+        return null;
+    }
 
 }
