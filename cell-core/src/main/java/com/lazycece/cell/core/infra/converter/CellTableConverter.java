@@ -33,7 +33,6 @@ public class CellTableConverter {
         }
         CellTablePO po = new CellTablePO();
         po.setName(model.getName());
-        po.setCode(model.getCode());
         po.setValue(model.getValue());
         po.setMinValue(model.getMinValue());
         po.setMaxValue(model.getMaxValue());
@@ -49,7 +48,6 @@ public class CellTableConverter {
         }
         CellTable model = new CellTable();
         model.setName(po.getName());
-        model.setCode(po.getCode());
         model.setValue(po.getValue());
         model.setMinValue(po.getMinValue());
         model.setMaxValue(po.getMaxValue());

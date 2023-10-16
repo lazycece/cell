@@ -32,6 +32,13 @@ public interface CellTableRepository {
     boolean existCellTable();
 
     /**
+     * Save the cell table information.
+     *
+     * @param cellTable ${@link CellTable}
+     */
+    void save(CellTable cellTable);
+
+    /**
      * Query by cell name.
      *
      * @param name name
@@ -42,8 +49,9 @@ public interface CellTableRepository {
     /**
      * Update by cell name.
      *
-     * @param name name
+     * @param name  name
+     * @param value value
      * @return true or false
      */
-    boolean updateByName(String name);
+    boolean updateValueByName(String name, Integer value);
 }

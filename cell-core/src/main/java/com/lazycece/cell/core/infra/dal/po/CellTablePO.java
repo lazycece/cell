@@ -33,10 +33,6 @@ public class CellTablePO {
      */
     private String name;
     /**
-     * cell code
-     */
-    private String code;
-    /**
      * current value
      */
     private Integer value;
@@ -75,14 +71,6 @@ public class CellTablePO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public Integer getValue() {

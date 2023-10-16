@@ -27,4 +27,6 @@ public interface CellTableMapper {
     void insert(CellTablePO po);
 
     CellTablePO findByName(String name);
+
+    int updateValueByName(String name, Integer value);
 }

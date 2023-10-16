@@ -33,6 +33,14 @@ public class CellTableRepositoryImpl implements CellTableRepository {
     }
 
     /**
+     * @see CellTableRepository#save
+     */
+    @Override
+    public void save(CellTable cellTable) {
+
+    }
+
+    /**
      * @see CellTableRepository#queryByName
      */
     @Override
@@ -41,10 +49,10 @@ public class CellTableRepositoryImpl implements CellTableRepository {
     }
 
     /**
-     * @see CellTableRepository#updateByName
+     * @see CellTableRepository#updateValueByName
      */
     @Override
-    public boolean updateByName(String name) {
+    public boolean updateValueByName(String name, Integer value) {
         return false;
     }
 }
