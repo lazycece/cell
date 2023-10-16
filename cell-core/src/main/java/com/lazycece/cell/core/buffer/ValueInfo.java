@@ -28,4 +28,12 @@ public class ValueInfo {
      * current value
      */
     private AtomicInteger value;
+
+    public AtomicInteger getValue() {
+        return value;
+    }
+
+    public void setValue(AtomicInteger value) {
+        this.value = value;
+    }
 }
