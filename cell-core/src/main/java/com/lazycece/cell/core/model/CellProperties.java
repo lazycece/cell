@@ -16,45 +16,18 @@
 
 package com.lazycece.cell.core.model;
 
-import com.lazycece.cell.core.model.spec.CellType;
-
 /**
  * @author lazycece
- * @date 2023/10/16
+ * @date 2023/10/15
  */
-public interface CellConfig {
+public class CellProperties {
 
     /**
      * The data center
      */
-    Integer dataCenter();
-
+    private Integer dataCenter;
     /**
      * The machine
      */
-    Integer machine();
-
-    /**
-     * The cell type
-     *
-     * @return see ${@link CellType}
-     */
-    default CellType cellType() {
-        return null;
-    }
-
-    /**
-     * min value
-     */
-    Integer minValue();
-
-    /**
-     * max value
-     */
-    Integer maxValue();
-
-    /**
-     * the step, that the interval size of the value.
-     */
-    Integer step();
+    private Integer machine;
 }

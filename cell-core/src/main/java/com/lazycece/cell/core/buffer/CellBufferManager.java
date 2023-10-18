@@ -16,7 +16,15 @@
 
 package com.lazycece.cell.core.buffer;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.lazycece.cell.core.exception.CellException;
+import com.lazycece.cell.core.infra.repository.CellTableRepository;
+import com.lazycece.cell.core.model.CellTable;
+import com.lazycece.cell.core.model.spec.CellBuilder;
+import com.lazycece.cell.core.model.spec.CellType;
+
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author lazycece
@@ -24,13 +32,33 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CellBufferManager {
 
-    private static final ConcurrentHashMap<String/*name*/, CellBuffer> cacheMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String/*name*/, CellBuffer> CACHE_MAP = new ConcurrentHashMap<>();
+    private ExecutorService service = new ThreadPoolExecutor(5, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new UpdateThreadFactory());
+    private CellTableRepository cellTableRepository;
+    private AtomicBoolean ready = new AtomicBoolean(false);
 
-    public static void put(String name, CellBuffer cellBuffer) {
-        cacheMap.put(name, cellBuffer);
+    public void init() {
+        if (ready.compareAndSet(false, true)) {
+
+        }
+
     }
 
-    public static CellBuffer get(String name) {
-        return cacheMap.get(name);
+    public static void register(List<CellTable> cellTableList) {
+        // 初始化cache
+        // TODO: 2023/10/17  从数据库里捞取所有的数据进行cache
     }
+
+    public static int getSequence(String name) {
+        CellBuffer cellBuffer = CACHE_MAP.get(name);
+        if (cellBuffer == null) {
+            throw new CellException(String.format("cell (%s) buffer is null.", name));
+        }
+
+
+        // TODO: 2023/10/17  if 阙值进行扩容
+
+    }
+
+
 }

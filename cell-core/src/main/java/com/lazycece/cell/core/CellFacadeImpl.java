@@ -37,6 +37,7 @@ public class CellFacadeImpl implements CellFacade {
     private CellTableRepository cellTableRepository;
     private CellConfig cellConfig;
 
+    // TODO: 2023/10/17  启动 》监听器 》 检测表是否存在 》 注册扫描 》 初始化缓存 》 cell启动成功
     /**
      * @see CellFacade#generateId
      */
