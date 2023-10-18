@@ -27,82 +27,55 @@ public class CellBuffer {
      * cell name
      */
     private String name;
-    /**
-     * cell code
-     */
-    private String code;
+
     /**
      * min value
      */
     private Integer minValue;
+
     /**
      * max value
      */
     private Integer maxValue;
+
     /**
      * the step, that the interval size of the value.
      */
     private Integer step;
+
     /**
-     * Current value
+     * current value
      */
     private final ValueInfo[] valueInfos = new ValueInfo[2];
+
+    /**
+     * value info array  position pointer
+     */
     private volatile int pointer;
+
+    /**
+     * show expansion value ready or not
+     */
+    private volatile boolean nextReady = false;
+
+    /**
+     * cell buffer lock
+     */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public String getName() {
-        return name;
+    /**
+     * Get need to expansion or not.
+     *
+     * @param threshold expansion threshold
+     * @return true or false
+     */
+    public boolean needExpansion(double threshold) {
+        if (nextReady) {
+            return false;
+        }
+        double currentValue = valueInfos[pointer].getValue().doubleValue();
+        double percentage = currentValue % step / step;
+        return percentage >= threshold;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Integer getMinValue() {
-        return minValue;
-    }
-
-    public void setMinValue(Integer minValue) {
-        this.minValue = minValue;
-    }
-
-    public Integer getMaxValue() {
-        return maxValue;
-    }
-
-    public void setMaxValue(Integer maxValue) {
-        this.maxValue = maxValue;
-    }
-
-    public Integer getStep() {
-        return step;
-    }
-
-    public void setStep(Integer step) {
-        this.step = step;
-    }
-
-    public ValueInfo[] getValueInfos() {
-        return valueInfos;
-    }
-
-    public int getPointer() {
-        return pointer;
-    }
-
-    public void setPointer(int pointer) {
-        this.pointer = pointer;
-    }
-
-    public ReentrantReadWriteLock getLock() {
-        return lock;
-    }
 }
