@@ -16,35 +16,44 @@
 
 package com.lazycece.cell.core.infra.repository;
 
-import com.lazycece.cell.core.model.CellTable;
+import com.lazycece.cell.core.model.CellRegistry;
+
+import java.util.List;
 
 /**
  * @author lazycece
  * @date 2023/9/9
  */
-public interface CellTableRepository {
+public interface CellRegistryRepository {
 
     /**
-     * Detect the cell table exist or not.
+     * Detect the cell registry table exist or not.
      *
      * @return true or false
      */
-    boolean existCellTable();
+    boolean existCellRegistry();
 
     /**
-     * Save the cell table information.
+     * Save the cell registry information.
      *
-     * @param cellTable ${@link CellTable}
+     * @param cellRegistry ${@link CellRegistry}
      */
-    void save(CellTable cellTable);
+    void save(CellRegistry cellRegistry);
+
+    /**
+     * Query all cell registry information.
+     *
+     * @return cell registry list ${@link CellRegistry}
+     */
+    List<CellRegistry> queryAll();
 
     /**
      * Query by cell name.
      *
      * @param name name
-     * @return call table
+     * @return call registry
      */
-    CellTable queryByName(String name);
+    CellRegistry lockQueryByName(String name);
 
     /**
      * Update by cell name.

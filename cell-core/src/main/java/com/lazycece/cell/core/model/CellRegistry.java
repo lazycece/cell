@@ -14,20 +14,21 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.infra.dal.po;
+package com.lazycece.cell.core.model;
+
+import com.lazycece.cell.core.configuration.CellConfiguration;
+import com.lazycece.cell.core.model.spec.CellType;
 
 import java.util.Date;
 
 /**
+ * The cell registry table.
+ *
  * @author lazycece
- * @date 2023/9/10
+ * @date 2023/8/30
  */
-public class CellTablePO {
+public class CellRegistry {
 
-    /**
-     * pk id
-     */
-    private Integer id;
     /**
      * cell name
      */
@@ -35,15 +36,15 @@ public class CellTablePO {
     /**
      * current value
      */
-    private Integer value;
+    private Long value;
     /**
      * min value
      */
-    private Integer minValue;
+    private Long minValue;
     /**
      * max value
      */
-    private Integer maxValue;
+    private Long maxValue;
     /**
      * the step, that the interval size of the value.
      */
@@ -57,12 +58,16 @@ public class CellTablePO {
      */
     private Date updateTime;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public static CellRegistry init(CellType cellType, CellConfiguration configuration) {
+        CellRegistry cellRegistry = new CellRegistry();
+        cellRegistry.setName(cellType.name());
+        cellRegistry.setValue(configuration.getMinValue());
+        cellRegistry.setMinValue(configuration.getMinValue());
+        cellRegistry.setMaxValue(configuration.getMaxValue());
+        cellRegistry.setStep(cellRegistry.getStep());
+        cellRegistry.setCreateTime(new Date());
+        cellRegistry.setUpdateTime(new Date());
+        return cellRegistry;
     }
 
     public String getName() {
@@ -73,27 +78,27 @@ public class CellTablePO {
         this.name = name;
     }
 
-    public Integer getValue() {
+    public Long getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Long value) {
         this.value = value;
     }
 
-    public Integer getMinValue() {
+    public Long getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(Integer minValue) {
+    public void setMinValue(Long minValue) {
         this.minValue = minValue;
     }
 
-    public Integer getMaxValue() {
+    public Long getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(Integer maxValue) {
+    public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
     }
 

@@ -16,17 +16,17 @@
 
 package com.lazycece.cell.core.infra.dal.mapper;
 
-import com.lazycece.cell.core.infra.dal.po.CellTablePO;
+import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
 
 /**
  * @author lazycece
  * @date 2023/9/10
  */
-public interface CellTableMapper {
+public interface CellRegistryMapper {
 
-    void insert(CellTablePO po);
+    void insert(CellRegistryPO po);
 
-    CellTablePO findByName(String name);
+    CellRegistryPO findByName(String name);
 
     int updateValueByName(String name, Integer value);
 }

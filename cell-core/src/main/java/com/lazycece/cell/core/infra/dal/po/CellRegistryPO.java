@@ -14,18 +14,20 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.model;
+package com.lazycece.cell.core.infra.dal.po;
 
 import java.util.Date;
 
 /**
- * The cell registry table.
- *
  * @author lazycece
- * @date 2023/8/30
+ * @date 2023/9/10
  */
-public class CellTable {
+public class CellRegistryPO {
 
+    /**
+     * pk id
+     */
+    private Integer id;
     /**
      * cell name
      */
@@ -33,15 +35,15 @@ public class CellTable {
     /**
      * current value
      */
-    private Integer value;
+    private Long value;
     /**
      * min value
      */
-    private Integer minValue;
+    private Long minValue;
     /**
      * max value
      */
-    private Integer maxValue;
+    private Long maxValue;
     /**
      * the step, that the interval size of the value.
      */
@@ -55,6 +57,14 @@ public class CellTable {
      */
     private Date updateTime;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -63,27 +73,27 @@ public class CellTable {
         this.name = name;
     }
 
-    public Integer getValue() {
+    public Long getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Long value) {
         this.value = value;
     }
 
-    public Integer getMinValue() {
+    public Long getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(Integer minValue) {
+    public void setMinValue(Long minValue) {
         this.minValue = minValue;
     }
 
-    public Integer getMaxValue() {
+    public Long getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(Integer maxValue) {
+    public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
     }
 

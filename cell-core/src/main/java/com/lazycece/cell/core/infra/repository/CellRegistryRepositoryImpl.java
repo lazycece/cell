@@ -16,40 +16,50 @@
 
 package com.lazycece.cell.core.infra.repository;
 
-import com.lazycece.cell.core.model.CellTable;
+import com.lazycece.cell.core.model.CellRegistry;
+
+import java.util.List;
 
 /**
  * @author lazycece
  * @date 2023/9/9
  */
-public class CellTableRepositoryImpl implements CellTableRepository {
+public class CellRegistryRepositoryImpl implements CellRegistryRepository {
 
     /**
-     * @see CellTableRepository#existCellTable()
+     * @see CellRegistryRepository#existCellRegistry()
      */
     @Override
-    public boolean existCellTable() {
+    public boolean existCellRegistry() {
         return false;
     }
 
     /**
-     * @see CellTableRepository#save
+     * @see CellRegistryRepository#save
      */
     @Override
-    public void save(CellTable cellTable) {
+    public void save(CellRegistry cellRegistry) {
 
     }
 
     /**
-     * @see CellTableRepository#queryByName
+     * @see CellRegistryRepository#queryAll
      */
     @Override
-    public CellTable queryByName(String name) {
+    public List<CellRegistry> queryAll() {
         return null;
     }
 
     /**
-     * @see CellTableRepository#updateValueByName
+     * @see CellRegistryRepository#lockQueryByName
+     */
+    @Override
+    public CellRegistry lockQueryByName(String name) {
+        return null;
+    }
+
+    /**
+     * @see CellRegistryRepository#updateValueByName
      */
     @Override
     public boolean updateValueByName(String name, Integer value) {

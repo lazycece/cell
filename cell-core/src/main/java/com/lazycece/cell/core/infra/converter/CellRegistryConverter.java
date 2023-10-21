@@ -16,8 +16,8 @@
 
 package com.lazycece.cell.core.infra.converter;
 
-import com.lazycece.cell.core.infra.dal.po.CellTablePO;
-import com.lazycece.cell.core.model.CellTable;
+import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
+import com.lazycece.cell.core.model.CellRegistry;
 
 import java.util.Date;
 
@@ -25,13 +25,13 @@ import java.util.Date;
  * @author lazycece
  * @date 2023/9/10
  */
-public class CellTableConverter {
+public class CellRegistryConverter {
 
-    public static CellTablePO toCellTablePO(CellTable model) {
+    public static CellRegistryPO toCellRegistryPO(CellRegistry model) {
         if (model == null) {
             return null;
         }
-        CellTablePO po = new CellTablePO();
+        CellRegistryPO po = new CellRegistryPO();
         po.setName(model.getName());
         po.setValue(model.getValue());
         po.setMinValue(model.getMinValue());
@@ -42,11 +42,11 @@ public class CellTableConverter {
         return po;
     }
 
-    public static CellTable toCellTable(CellTablePO po) {
+    public static CellRegistry toCellRegistry(CellRegistryPO po) {
         if (po == null) {
             return null;
         }
-        CellTable model = new CellTable();
+        CellRegistry model = new CellRegistry();
         model.setName(po.getName());
         model.setValue(po.getValue());
         model.setMinValue(po.getMinValue());
