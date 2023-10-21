@@ -17,13 +17,23 @@
 package com.lazycece.cell.core;
 
 import com.lazycece.cell.core.buffer.CellBufferManager;
+import com.lazycece.cell.core.configuration.CellConfiguration;
 import com.lazycece.cell.core.exception.CellException;
-import com.lazycece.cell.core.infra.repository.CellTableRepository;
-import com.lazycece.cell.core.model.CellConfig;
+import com.lazycece.cell.core.infra.repository.CellRegistryRepository;
+import com.lazycece.cell.core.model.CellRegistry;
 import com.lazycece.cell.core.model.spec.Cell;
 import com.lazycece.cell.core.model.spec.CellBuilder;
 import com.lazycece.cell.core.model.spec.CellType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -32,12 +42,16 @@ import java.util.Date;
  * @author lazycece
  * @date 2023/9/8
  */
-public class CellFacadeImpl implements CellFacade {
+@Component
+public class CellFacadeImpl implements CellFacade, InitializingBean {
 
-    private CellTableRepository cellTableRepository;
-    private CellConfig cellConfig;
+    private final Logger log = LoggerFactory.getLogger(CellFacadeImpl.class);
+    @Autowired
+    private CellRegistryRepository cellRegistryRepository;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+    private CellConfiguration cellConfiguration;
 
-    // TODO: 2023/10/17  启动 》监听器 》 检测表是否存在 》 注册扫描 》 初始化缓存 》 cell启动成功
     /**
      * @see CellFacade#generateId
      */
@@ -46,14 +60,51 @@ public class CellFacadeImpl implements CellFacade {
         if (cellType == null) {
             throw new CellException("invalid cell type.");
         }
-        int value = CellBufferManager.getSequence(cellType.name());
+        int value = CellBufferManager.getInstance().getSequence(cellType.name());
         Cell cell = CellBuilder.builder()
                 .code(cellType.code())
                 .date(new Date())
-                .dataCenter(cellConfig.dataCenter())
-                .machine(cellConfig.machine())
+                .dataCenter(cellConfiguration.getDataCenter())
+                .machine(cellConfiguration.getMachine())
                 .sequence(value)
                 .build();
         return cell.toString();
+    }
+
+    /**
+     * @see InitializingBean#afterPropertiesSet
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        boolean exist = cellRegistryRepository.existCellRegistry();
+        if (!exist) {
+            throw new CellException("There is no cell registry table in db.");
+        }
+        initCellRegistry();
+        CellBufferManager.getInstance().initCache();
+        log.info("Cell started successfully !");
+    }
+
+    private void initCellRegistry() {
+        Class<? extends CellType> cellTypeClass = cellConfiguration.getCellTypeClass();
+        if (cellTypeClass == null) {
+            throw new CellException("Cell configuration (cell type class) not exist.");
+        }
+        if (!cellTypeClass.isEnum()) {
+            throw new CellException("Cell configuration (cell type class) not enum.");
+        }
+        Arrays.asList(cellTypeClass.getEnumConstants())
+                .forEach(cellType ->
+                        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                            @Override
+                            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(cellType.name());
+                                if (cellRegistry == null) {
+                                    cellRegistry = CellRegistry.init(cellType, cellConfiguration);
+                                    cellRegistryRepository.save(cellRegistry);
+                                }
+                            }
+                        })
+                );
     }
 }
