@@ -17,6 +17,8 @@
 package com.lazycece.cell.core.model.spec;
 
 /**
+ * Define cell type enum specification.
+ *
  * @author lazycece
  * @date 2023/9/10
  */
