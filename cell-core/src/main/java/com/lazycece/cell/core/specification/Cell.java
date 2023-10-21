@@ -45,7 +45,7 @@ public class Cell {
     /**
      * The sequence
      */
-    private Integer sequence;
+    private Long sequence;
 
     public String getCode() {
         return code;
@@ -79,11 +79,11 @@ public class Cell {
         this.machine = machine;
     }
 
-    public Integer getSequence() {
+    public Long getSequence() {
         return sequence;
     }
 
-    public void setSequence(Integer sequence) {
+    public void setSequence(Long sequence) {
         this.sequence = sequence;
     }
 

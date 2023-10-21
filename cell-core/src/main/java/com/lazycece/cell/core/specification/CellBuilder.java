@@ -54,7 +54,7 @@ public class CellBuilder {
         return this;
     }
 
-    public CellBuilder sequence(Integer sequence) {
+    public CellBuilder sequence(Long sequence) {
         cell.setSequence(sequence);
         return this;
     }

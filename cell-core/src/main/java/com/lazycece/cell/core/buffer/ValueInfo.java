@@ -16,7 +16,7 @@
 
 package com.lazycece.cell.core.buffer;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author lazycece
@@ -27,13 +27,13 @@ public class ValueInfo {
     /**
      * current value
      */
-    private AtomicInteger value;
+    private AtomicLong value;
 
-    public AtomicInteger getValue() {
+    public AtomicLong getValue() {
         return value;
     }
 
-    public void setValue(AtomicInteger value) {
+    public void setValue(AtomicLong value) {
         this.value = value;
     }
 }

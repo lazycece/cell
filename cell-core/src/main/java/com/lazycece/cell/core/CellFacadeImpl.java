@@ -60,7 +60,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
         if (cellType == null) {
             throw new CellException("invalid cell type.");
         }
-        int value = CellBufferManager.getInstance().getSequence(cellType.name());
+        long value = CellBufferManager.getInstance().getSequence(cellType.name());
         Cell cell = CellBuilder.builder()
                 .code(cellType.code())
                 .date(new Date())
