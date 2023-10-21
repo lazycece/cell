@@ -16,7 +16,7 @@
 
 package com.lazycece.cell.core.configuration;
 
-import com.lazycece.cell.core.model.spec.CellType;
+import com.lazycece.cell.core.specification.CellType;
 
 /**
  * @author lazycece
