@@ -16,6 +16,9 @@
 
 package com.lazycece.cell.core.buffer;
 
+import com.lazycece.cell.core.model.CellRegistry;
+
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -29,14 +32,14 @@ public class CellBuffer {
     private String name;
 
     /**
-     * min value
+     * Cell buffer version
      */
-    private Integer minValue;
+    private Integer version = 0;
 
     /**
      * max value
      */
-    private Integer maxValue;
+    private Long maxValue;
 
     /**
      * the step, that the interval size of the value.
@@ -63,6 +66,19 @@ public class CellBuffer {
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    // TODO: 2023/10/19  note
+    public void fillBuffer(CellRegistry cellRegistry) {
+        name = cellRegistry.getName();
+        maxValue = cellRegistry.getMaxValue();
+        step = cellRegistry.getStep();
+        if (version == 0) {
+            valueInfos[pointer].setValue(new AtomicLong(cellRegistry.getValue()));
+        } else {
+            valueInfos[nextPointer()].setValue(new AtomicLong(cellRegistry.getValue()));
+        }
+        ++version;
+    }
+
     /**
      * Get need to expansion or not.
      *
@@ -78,4 +94,41 @@ public class CellBuffer {
         return percentage >= threshold;
     }
 
+    /**
+     * Get next value.
+     *
+     * @return next value
+     */
+    public long nextValue() {
+        long nextVal = valueInfos[pointer].getValue().getAndIncrement();
+        if (nextVal <= maxValue) {
+            return nextVal;
+        }
+        resetPointer();
+        setNextReady(false);
+        return valueInfos[pointer].getValue().incrementAndGet();
+    }
+
+    /**
+     * Reset value array pointer.
+     */
+    private void resetPointer() {
+        pointer = nextPointer();
+    }
+
+    private int nextPointer() {
+        return (pointer + 1) % 2;
+    }
+
+    public void setNextReady(boolean nextReady) {
+        this.nextReady = nextReady;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ReentrantReadWriteLock getLock() {
+        return lock;
+    }
 }

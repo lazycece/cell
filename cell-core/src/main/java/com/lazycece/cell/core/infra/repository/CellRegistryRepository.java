@@ -62,5 +62,5 @@ public interface CellRegistryRepository {
      * @param value value
      * @return true or false
      */
-    boolean updateValueByName(String name, Integer value);
+    boolean updateValueByName(String name, Long value);
 }

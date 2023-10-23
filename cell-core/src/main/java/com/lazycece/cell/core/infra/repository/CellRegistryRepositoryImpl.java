@@ -62,7 +62,7 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
      * @see CellRegistryRepository#updateValueByName
      */
     @Override
-    public boolean updateValueByName(String name, Integer value) {
+    public boolean updateValueByName(String name, Long value) {
         return false;
     }
 }
