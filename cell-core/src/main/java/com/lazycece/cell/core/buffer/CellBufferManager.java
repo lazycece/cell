@@ -93,8 +93,8 @@ public class CellBufferManager {
                 if (cellRegistry == null) {
                     throw new CellException(String.format("Cell registry ( %s ) not exist.", name));
                 }
-                // TODO: 2023/10/20  最大值检测；
-                // TODO: 2023/10/20 值滚动，每天从头开始？or 翻滚？
+                // TODO: 2023/10/20  最大值检测，超过最大值从头min开始滚动
+                // TODO: 2023/10/24 根据实际qps情况动态调整buffer value的step问题 ,“快＋慢-” 策略
                 cellRegistryRepository.updateValueByName(name, cellRegistry.getValue() + cellRegistry.getStep());
             }
         });
