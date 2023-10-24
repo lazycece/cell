@@ -47,6 +47,7 @@
 
     <modules>
         <module>cell-core</module>
+        <module>cell-specification</module>
     </modules>
 
     <properties>
