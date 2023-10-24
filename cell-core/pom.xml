@@ -24,7 +24,7 @@
     </parent>
 
     <artifactId>cell-core</artifactId>
-    <name>cell-core</name>
+    <name>${project.artifactId}</name>
 
     <properties>
         <slf4j.version>2.0.5</slf4j.version>
