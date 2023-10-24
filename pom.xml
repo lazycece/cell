@@ -48,6 +48,7 @@
     <modules>
         <module>cell-core</module>
         <module>cell-specification</module>
+        <module>cell-spring-boot-stater</module>
     </modules>
 
     <properties>
