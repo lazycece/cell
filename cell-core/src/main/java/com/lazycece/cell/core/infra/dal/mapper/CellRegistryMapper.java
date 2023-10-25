@@ -17,6 +17,9 @@
 package com.lazycece.cell.core.infra.dal.mapper;
 
 import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  * @author lazycece
@@ -24,9 +27,55 @@ import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
  */
 public interface CellRegistryMapper {
 
+    /**
+     * Insert cell registry.
+     *
+     * @param po ${@link CellRegistryPO}
+     */
+    @Insert({"INSERT INTO cell_registry(name, value, min_value, max_value, step, create_time, update_time) ",
+            "VALUES (#{name},#{value},#{minValue},#{maxValue},#{step},#{createTime},#{updateTime})"})
     void insert(CellRegistryPO po);
 
+    /**
+     * Find cell registry by cell's name.
+     *
+     * @param name cell name
+     * @return see ${@link CellRegistryPO}
+     */
+    @Select("SELECT id, name, value, min_value, max_value, step, create_time, update_time FROM cell_registry")
+    @Results(value = {
+            @Result(column = "id", property = "id"),
+            @Result(column = "name", property = "name"),
+            @Result(column = "value", property = "value"),
+            @Result(column = "min_value", property = "minValue"),
+            @Result(column = "max_value", property = "maxValue"),
+            @Result(column = "step", property = "step"),
+            @Result(column = "create_time", property = "createTime"),
+            @Result(column = "update_time", property = "updateTime")
+    })
     CellRegistryPO findByName(String name);
 
-    int updateValueByName(String name, Integer value);
+    /**
+     * Find all cell registry name.
+     *
+     * @return cell registry name list
+     */
+    @Select("SELECT name FROM cell_registry")
+    List<String> findAllName();
+
+    /**
+     * Update by cell registry name.
+     *
+     * @return result
+     */
+    @Update("UPDATE cell_registry SET value = value + step WHERE name = #{name}")
+    int updateValueByName(String name);
+
+    /**
+     * Update by cell registry name, use custom step.
+     *
+     * @return result
+     */
+    @Update("UPDATE cell_registry SET value = value + #{step} WHERE name = #{name}")
+    int updateValueByNameWithGivenStep(String name, Integer step);
 }
