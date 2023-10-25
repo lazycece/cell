@@ -20,12 +20,12 @@ package com.lazycece.cell.core.configuration;
  * @author lazycece
  * @date 2023/10/21
  */
-public class CellBufferConfiguration {
+public class BufferConfiguration {
 
     /**
-     * Cell buffer expansion threshold, default value is 0.7
+     * Cell buffer expansion threshold, default value is 0.75
      */
-    private double expansionThreshold = 0.7;
+    private double expansionThreshold = 0.75;
 
     /**
      * Cell buffer thread pool core size, default value is 5
