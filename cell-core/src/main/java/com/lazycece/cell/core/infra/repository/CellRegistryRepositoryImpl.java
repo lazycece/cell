@@ -16,7 +16,14 @@
 
 package com.lazycece.cell.core.infra.repository;
 
+import com.lazycece.cell.core.exception.CellAssert;
+import com.lazycece.cell.core.infra.converter.CellRegistryConverter;
+import com.lazycece.cell.core.infra.dal.mapper.CellRegistryMapper;
+import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
 import com.lazycece.cell.core.model.CellRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -24,45 +31,83 @@ import java.util.List;
  * @author lazycece
  * @date 2023/9/9
  */
+@Repository
 public class CellRegistryRepositoryImpl implements CellRegistryRepository {
+
+    @Autowired
+    private CellRegistryMapper cellRegistryMapper;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     /**
      * @see CellRegistryRepository#existCellRegistry()
      */
     @Override
     public boolean existCellRegistry() {
-        return false;
+        return cellRegistryMapper.existCellRegistry() > 0;
     }
 
     /**
-     * @see CellRegistryRepository#save
+     * @see CellRegistryRepository#save(CellRegistry)
      */
     @Override
     public void save(CellRegistry cellRegistry) {
-
+        CellRegistryPO po = CellRegistryConverter.toCellRegistryPO(cellRegistry);
+        cellRegistryMapper.insert(po);
     }
 
     /**
-     * @see CellRegistryRepository#queryAll
+     * @see CellRegistryRepository#queryAllName()
      */
     @Override
-    public List<CellRegistry> queryAll() {
-        return null;
+    public List<String> queryAllName() {
+        return cellRegistryMapper.findAllName();
     }
 
     /**
-     * @see CellRegistryRepository#lockQueryByName
+     * @see CellRegistryRepository#queryByName
      */
     @Override
-    public CellRegistry lockQueryByName(String name) {
-        return null;
+    public CellRegistry queryByName(String name) {
+        CellRegistryPO po = cellRegistryMapper.findByName(name);
+        return CellRegistryConverter.toCellRegistry(po);
     }
 
     /**
-     * @see CellRegistryRepository#updateValueByName
+     * @see CellRegistryRepository#updateValueAndGet(String)
      */
     @Override
-    public boolean updateValueByName(String name, Long value) {
-        return false;
+    public CellRegistry updateValueAndGet(String name) {
+        return transactionTemplate.execute(status -> {
+            int result = cellRegistryMapper.updateValueByName(name);
+            CellAssert.isTrue(result > 0, "To update cell's value fail");
+            CellRegistry cellRegistry = queryByName(name);
+            CellAssert.notNull(cellRegistry, "Cell registry is null");
+            if (cellRegistry.needReset()) {
+                result = cellRegistryMapper.updateValueByReset(name);
+                CellAssert.isTrue(result > 0, "To reset cell's value fail");
+                return queryByName(name);
+            }
+            return cellRegistry;
+        });
+    }
+
+    /**
+     * @see CellRegistryRepository#updateValueAndGet(String, Integer)
+     */
+    @Override
+    public CellRegistry updateValueAndGet(String name, Integer step) {
+        return transactionTemplate.execute(status -> {
+            int result = cellRegistryMapper.updateValueByNameWithGivenStep(name, step);
+            CellAssert.isTrue(result > 0, "To update cell's value fail");
+            CellRegistry cellRegistry = queryByName(name);
+            CellAssert.notNull(cellRegistry, "Cell registry is null");
+            if (cellRegistry.needReset()) {
+                result = cellRegistryMapper.updateValueByReset(name);
+                CellAssert.isTrue(result > 0, "To reset cell's value fail");
+                return queryByName(name);
+            }
+            return cellRegistry;
+        });
     }
 }

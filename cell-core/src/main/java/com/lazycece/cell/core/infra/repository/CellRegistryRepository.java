@@ -41,26 +41,35 @@ public interface CellRegistryRepository {
     void save(CellRegistry cellRegistry);
 
     /**
-     * Query all cell registry information.
+     * Query all cell registry name.
      *
-     * @return cell registry list ${@link CellRegistry}
+     * @return cell registry name list
      */
-    List<CellRegistry> queryAll();
+    List<String> queryAllName();
 
     /**
-     * Query by cell name.
+     * Query cell registry.
      *
      * @param name name
-     * @return call registry
+     * @return see ${@link CellRegistry}
      */
-    CellRegistry lockQueryByName(String name);
+    CellRegistry queryByName(String name);
 
     /**
-     * Update by cell name.
+     * Update cell's value , and get cell registry information.
+     * <p>using origin step value</p>
      *
-     * @param name  name
-     * @param value value
-     * @return true or false
+     * @param name name
+     * @return see ${@link CellRegistry}
      */
-    boolean updateValueByName(String name, Long value);
+    CellRegistry updateValueAndGet(String name);
+
+    /**
+     * Update cell's value , and get cell registry information.
+     * <p>using given step value</p>
+     *
+     * @param name name
+     * @return see ${@link CellRegistry}
+     */
+    CellRegistry updateValueAndGet(String name, Integer step);
 }

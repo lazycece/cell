@@ -25,7 +25,14 @@ import java.util.List;
  * @author lazycece
  * @date 2023/9/10
  */
+@Mapper
 public interface CellRegistryMapper {
+
+    /**
+     * To judge cell registry table exist or not.
+     */
+    @Select("SELECT count(*) FROM information_schema.TABLES WHERE table_name ='cell_registry'")
+    int existCellRegistry();
 
     /**
      * Insert cell registry.
@@ -78,4 +85,12 @@ public interface CellRegistryMapper {
      */
     @Update("UPDATE cell_registry SET value = value + #{step} WHERE name = #{name}")
     int updateValueByNameWithGivenStep(String name, Integer step);
+
+    /**
+     * Update by cell registry name, to reset value.
+     *
+     * @return result
+     */
+    @Update("UPDATE cell_registry SET value = min_value WHERE name = #{name}")
+    int updateValueByReset(String name);
 }
