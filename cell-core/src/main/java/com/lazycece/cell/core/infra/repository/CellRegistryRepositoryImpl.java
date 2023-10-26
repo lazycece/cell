@@ -80,12 +80,12 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
     public CellRegistry updateValueAndGet(String name) {
         return transactionTemplate.execute(status -> {
             int result = cellRegistryMapper.updateValueByName(name);
-            CellAssert.isTrue(result > 0, "To update cell's value fail");
+            CellAssert.isTrue(result > 0, "To update cell's value fail (%s)", name);
             CellRegistry cellRegistry = queryByName(name);
-            CellAssert.notNull(cellRegistry, "Cell registry is null");
+            CellAssert.notNull(cellRegistry, "Cell registry (%s) is null", name);
             if (cellRegistry.needReset()) {
                 result = cellRegistryMapper.updateValueByReset(name);
-                CellAssert.isTrue(result > 0, "To reset cell's value fail");
+                CellAssert.isTrue(result > 0, "To reset cell's value fail (%s)", name);
                 return queryByName(name);
             }
             return cellRegistry;
@@ -99,12 +99,12 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
     public CellRegistry updateValueAndGet(String name, Integer step) {
         return transactionTemplate.execute(status -> {
             int result = cellRegistryMapper.updateValueByNameWithGivenStep(name, step);
-            CellAssert.isTrue(result > 0, "To update cell's value fail");
+            CellAssert.isTrue(result > 0, "To update cell's value fail (%s)", name);
             CellRegistry cellRegistry = queryByName(name);
-            CellAssert.notNull(cellRegistry, "Cell registry is null");
+            CellAssert.notNull(cellRegistry, "Cell registry is null (%s)", name);
             if (cellRegistry.needReset()) {
                 result = cellRegistryMapper.updateValueByReset(name);
-                CellAssert.isTrue(result > 0, "To reset cell's value fail");
+                CellAssert.isTrue(result > 0, "To reset cell's value fail (%s)", name);
                 return queryByName(name);
             }
             return cellRegistry;
