@@ -16,9 +16,6 @@
 
 package com.lazycece.cell.core.model;
 
-import com.lazycece.cell.core.configuration.CellConfiguration;
-import com.lazycece.cell.core.specification.CellType;
-
 import java.util.Date;
 
 /**
@@ -58,16 +55,11 @@ public class CellRegistry {
      */
     private Date updateTime;
 
-    public static CellRegistry init(CellType cellType, CellConfiguration configuration) {
-        CellRegistry cellRegistry = new CellRegistry();
-        cellRegistry.setName(cellType.name());
-        cellRegistry.setValue(configuration.getMinValue());
-        cellRegistry.setMinValue(configuration.getMinValue());
-        cellRegistry.setMaxValue(configuration.getMaxValue());
-        cellRegistry.setStep(cellRegistry.getStep());
-        cellRegistry.setCreateTime(new Date());
-        cellRegistry.setUpdateTime(new Date());
-        return cellRegistry;
+    public boolean needReset() {
+        if (value >= maxValue) {
+            return true;
+        }
+        return (maxValue - value) / (double) step < 0.25;
     }
 
     public String getName() {
