@@ -33,15 +33,15 @@ public class CellRegistry {
     /**
      * current value
      */
-    private Long value;
+    private Integer value;
     /**
      * min value
      */
-    private Long minValue;
+    private Integer minValue;
     /**
      * max value
      */
-    private Long maxValue;
+    private Integer maxValue;
     /**
      * the step, that the interval size of the value.
      */
@@ -70,27 +70,27 @@ public class CellRegistry {
         this.name = name;
     }
 
-    public Long getValue() {
+    public Integer getValue() {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(Integer value) {
         this.value = value;
     }
 
-    public Long getMinValue() {
+    public Integer getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(Long minValue) {
+    public void setMinValue(Integer minValue) {
         this.minValue = minValue;
     }
 
-    public Long getMaxValue() {
+    public Integer getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(Long maxValue) {
+    public void setMaxValue(Integer maxValue) {
         this.maxValue = maxValue;
     }
 
