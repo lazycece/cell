@@ -38,19 +38,9 @@ public class CellBuffer {
     private long maxValue;
 
     /**
-     * the step, that the interval size of the value
-     */
-    private volatile int step;
-
-    /**
-     * buffer refresh time (milliseconds)
-     */
-    private long refreshTimestamp = 0;
-
-    /**
      * current value
      */
-    private final ValueInfo[] valueInfos = new ValueInfo[2];
+    private final BufferValue[] bufferValues = new BufferValue[2];
 
     /**
      * value info array  position pointer
@@ -68,6 +58,11 @@ public class CellBuffer {
     private AtomicBoolean expanding = new AtomicBoolean(false);
 
     /**
+     * buffer refresh time (milliseconds)
+     */
+    private long refreshTimestamp = 0;
+
+    /**
      * cell buffer lock
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -78,15 +73,11 @@ public class CellBuffer {
      * @param cellRegistry ${@link CellRegistry}
      */
     public void fillBuffer(CellRegistry cellRegistry) {
-        if (refreshTimestamp == 0) {
-            valueInfos[pointer].setValue(new AtomicInteger(cellRegistry.getValue()));
-        } else {
-            valueInfos[nextPointer()].setValue(new AtomicInteger(cellRegistry.getValue()));
-        }
-        step = cellRegistry.getStep();
-        refreshTimestamp = System.currentTimeMillis();
         name = cellRegistry.getName();
         maxValue = cellRegistry.getMaxValue();
+        int pos = refreshTimestamp == 0 ? pointer : nextPointer();
+        bufferValues[pos] = new BufferValue(new AtomicInteger(cellRegistry.getValue()), cellRegistry.getStep());
+        refreshTimestamp = System.currentTimeMillis();
     }
 
     /**
@@ -95,13 +86,19 @@ public class CellBuffer {
      * @param threshold expansion threshold
      * @return true or false
      */
-    public synchronized boolean needExpansion(double threshold) {
+    public boolean needExpansion(double threshold) {
         if (nextReady) {
             return false;
         }
-        int currentValue = valueInfos[pointer].getValue().intValue();
-        double percentage = currentValue % step / (double) step;
+        BufferValue bufferValue = currentBufferValue();
+        int value = bufferValue.getValue().intValue();
+        int step = bufferValue.getStep();
+        double percentage = value % step / (double) step;
         return percentage >= threshold;
+    }
+
+    public BufferValue currentBufferValue() {
+        return bufferValues[pointer];
     }
 
     /**
@@ -110,11 +107,11 @@ public class CellBuffer {
      * @return next value
      */
     public int nextValue() {
-        int nextVal = valueInfos[pointer].getValue().getAndIncrement();
+        int nextVal = currentBufferValue().getValue().getAndIncrement();
         if (nextVal > maxValue && nextReady) {
             resetPointer();
             nextReady = false;
-            nextVal = valueInfos[pointer].getValue().getAndIncrement();
+            nextVal = currentBufferValue().getValue().getAndIncrement();
         }
         return nextVal;
     }
@@ -145,10 +142,6 @@ public class CellBuffer {
 
     public long getRefreshTimestamp() {
         return refreshTimestamp;
-    }
-
-    public int getStep() {
-        return step;
     }
 
     public void setNextReady(boolean nextReady) {

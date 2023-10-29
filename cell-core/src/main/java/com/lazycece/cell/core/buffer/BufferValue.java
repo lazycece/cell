@@ -22,18 +22,28 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lazycece
  * @date 2023/9/11
  */
-public class ValueInfo {
+public class BufferValue {
 
     /**
      * current value
      */
-    private AtomicInteger value;
+    private final AtomicInteger value;
+
+    /**
+     * the step, that the interval size of the value
+     */
+    private final int step;
+
+    public BufferValue(AtomicInteger value, int step) {
+        this.value = value;
+        this.step = step;
+    }
 
     public AtomicInteger getValue() {
         return value;
     }
 
-    public void setValue(AtomicInteger value) {
-        this.value = value;
+    public int getStep() {
+        return step;
     }
 }
