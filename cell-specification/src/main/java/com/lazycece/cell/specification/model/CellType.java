@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.specification;
+package com.lazycece.cell.specification.model;
 
 /**
  * Define cell type enum specification.

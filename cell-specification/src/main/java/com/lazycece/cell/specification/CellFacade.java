@@ -14,9 +14,9 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core;
+package com.lazycece.cell.specification;
 
-import com.lazycece.cell.core.specification.CellType;
+import com.lazycece.cell.specification.model.CellType;
 
 /**
  * Cell facade service.

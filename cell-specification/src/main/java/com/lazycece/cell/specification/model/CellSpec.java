@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.specification;
+package com.lazycece.cell.specification.model;
 
 import com.lazycece.cell.core.exception.CellException;
 
