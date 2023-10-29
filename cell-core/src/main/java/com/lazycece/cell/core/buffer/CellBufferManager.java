@@ -154,7 +154,7 @@ public class CellBufferManager {
         int maxStep = bufferConfig.getMaxStep();
         long bufferRefreshInterval = bufferConfig.getBufferRefreshInterval();
 
-        int step = cellBuffer.getStep();
+        int step = cellBuffer.currentBufferValue().getStep();
         long interval = System.currentTimeMillis() - cellBuffer.getRefreshTimestamp();
 
         // Dynamically adjust the expansion speed based on actual consumption
@@ -178,7 +178,7 @@ public class CellBufferManager {
      * Let current thread to spin wait while the cell buffer is expanding,
      * but sleep with max spin.
      *
-     * @param cellBuffer
+     * @param cellBuffer ${@link CellBuffer}
      */
     private void spinWaitAndSleep(CellBuffer cellBuffer) {
         int spinNum = 0;
