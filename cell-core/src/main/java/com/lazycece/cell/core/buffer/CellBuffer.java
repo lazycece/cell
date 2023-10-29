@@ -18,7 +18,8 @@ package com.lazycece.cell.core.buffer;
 
 import com.lazycece.cell.core.model.CellRegistry;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -32,19 +33,19 @@ public class CellBuffer {
     private String name;
 
     /**
-     * Cell buffer version
-     */
-    private Integer version = 0;
-
-    /**
      * max value
      */
-    private Long maxValue;
+    private long maxValue;
 
     /**
-     * the step, that the interval size of the value.
+     * the step, that the interval size of the value
      */
-    private Integer step;
+    private volatile int step;
+
+    /**
+     * buffer refresh time (milliseconds)
+     */
+    private long refreshTimestamp = 0;
 
     /**
      * current value
@@ -54,7 +55,7 @@ public class CellBuffer {
     /**
      * value info array  position pointer
      */
-    private volatile int pointer;
+    private volatile int pointer = 0;
 
     /**
      * show expansion value ready or not
@@ -62,21 +63,30 @@ public class CellBuffer {
     private volatile boolean nextReady = false;
 
     /**
+     * indicates the buffer is expanding or not.
+     */
+    private AtomicBoolean expanding = new AtomicBoolean(false);
+
+    /**
      * cell buffer lock
      */
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    // TODO: 2023/10/19  note
+    /**
+     * Fill the buffer with cell registry information.
+     *
+     * @param cellRegistry ${@link CellRegistry}
+     */
     public void fillBuffer(CellRegistry cellRegistry) {
+        if (refreshTimestamp == 0) {
+            valueInfos[pointer].setValue(new AtomicInteger(cellRegistry.getValue()));
+        } else {
+            valueInfos[nextPointer()].setValue(new AtomicInteger(cellRegistry.getValue()));
+        }
+        step = cellRegistry.getStep();
+        refreshTimestamp = System.currentTimeMillis();
         name = cellRegistry.getName();
         maxValue = cellRegistry.getMaxValue();
-        step = cellRegistry.getStep();
-        if (version == 0) {
-            valueInfos[pointer].setValue(new AtomicLong(cellRegistry.getValue()));
-        } else {
-            valueInfos[nextPointer()].setValue(new AtomicLong(cellRegistry.getValue()));
-        }
-        ++version;
     }
 
     /**
@@ -85,12 +95,12 @@ public class CellBuffer {
      * @param threshold expansion threshold
      * @return true or false
      */
-    public boolean needExpansion(double threshold) {
+    public synchronized boolean needExpansion(double threshold) {
         if (nextReady) {
             return false;
         }
-        double currentValue = valueInfos[pointer].getValue().doubleValue();
-        double percentage = currentValue % step / step;
+        int currentValue = valueInfos[pointer].getValue().intValue();
+        double percentage = currentValue % step / (double) step;
         return percentage >= threshold;
     }
 
@@ -99,14 +109,14 @@ public class CellBuffer {
      *
      * @return next value
      */
-    public long nextValue() {
-        long nextVal = valueInfos[pointer].getValue().getAndIncrement();
-        if (nextVal <= maxValue) {
-            return nextVal;
+    public int nextValue() {
+        int nextVal = valueInfos[pointer].getValue().getAndIncrement();
+        if (nextVal > maxValue && nextReady) {
+            resetPointer();
+            nextReady = false;
+            nextVal = valueInfos[pointer].getValue().getAndIncrement();
         }
-        resetPointer();
-        setNextReady(false);
-        return valueInfos[pointer].getValue().incrementAndGet();
+        return nextVal;
     }
 
     /**
@@ -116,16 +126,37 @@ public class CellBuffer {
         pointer = nextPointer();
     }
 
+    /**
+     * Get next pointer value.
+     *
+     * @return pointer value
+     */
     private int nextPointer() {
         return (pointer + 1) % 2;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getMaxValue() {
+        return maxValue;
+    }
+
+    public long getRefreshTimestamp() {
+        return refreshTimestamp;
+    }
+
+    public int getStep() {
+        return step;
     }
 
     public void setNextReady(boolean nextReady) {
         this.nextReady = nextReady;
     }
 
-    public String getName() {
-        return name;
+    public AtomicBoolean getExpanding() {
+        return expanding;
     }
 
     public ReentrantReadWriteLock getLock() {

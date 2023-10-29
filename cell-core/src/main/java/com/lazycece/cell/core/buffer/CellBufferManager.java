@@ -16,17 +16,14 @@
 
 package com.lazycece.cell.core.buffer;
 
-import com.lazycece.cell.core.configuration.CellBufferConfiguration;
-import com.lazycece.cell.core.exception.CellException;
+import com.lazycece.cell.core.configuration.BufferConfiguration;
+import com.lazycece.cell.core.exception.CellAssert;
 import com.lazycece.cell.core.infra.repository.CellRegistryRepository;
 import com.lazycece.cell.core.model.CellRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -43,7 +40,7 @@ public class CellBufferManager {
     private final Logger log = LoggerFactory.getLogger(CellBufferManager.class);
     private static CellBufferManager INSTANCE;
     private final ConcurrentHashMap<String/*name*/, CellBuffer> CACHE_MAP = new ConcurrentHashMap<>();
-    private CellBufferConfiguration bufferConfig;
+    private BufferConfiguration bufferConfig;
     private volatile boolean ready = false;
     private final ExecutorService executorService = new ThreadPoolExecutor(
             bufferConfig.getThreadPoolCoreSize(),
@@ -51,12 +48,10 @@ public class CellBufferManager {
             bufferConfig.getThreadPoolKeepAliveTime(),
             TimeUnit.SECONDS,
             new SynchronousQueue<>(),
-            new BufferThreadFactory("CellBufferRefresh"),
+            new BufferThreadFactory("CellBufferRefresher"),
             new ThreadPoolExecutor.AbortPolicy());
     @Autowired
     private CellRegistryRepository cellRegistryRepository;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     @PostConstruct
     public void init() {
@@ -67,6 +62,9 @@ public class CellBufferManager {
         return INSTANCE;
     }
 
+    /**
+     * initialize cell buffer cache.
+     */
     public synchronized void initCache() {
         if (ready) {
             log.info("Cell Buffer Manager has already been initialized.");
@@ -74,64 +72,130 @@ public class CellBufferManager {
         }
         log.info("Begin to init Cell Buffer Manager.");
 
-        List<CellRegistry> cellRegistryList = cellRegistryRepository.queryAll();
-        if (cellRegistryList == null || cellRegistryList.size() == 0) {
-            throw new CellException("Init cell buffer manager fail, no cell registrys.");
-        }
-        cellRegistryList.forEach(cellRegistry -> refresh(cellRegistry.getName()));
+        List<String> cellNameList = cellRegistryRepository.queryAllName();
+        CellAssert.notEmpty(cellNameList, "Init cell buffer manager fail, no cell registry information.");
+
+        cellNameList.forEach(name -> {
+            CellRegistry cellRegistry = cellRegistryRepository.updateValueAndGet(name);
+            CellAssert.notNull(cellRegistry, "Cell registry (%s) not exist", name);
+            CellBuffer cellBuffer = new CellBuffer();
+            cellBuffer.fillBuffer(cellRegistry);
+            CACHE_MAP.put(name, cellBuffer);
+        });
 
         ready = true;
         log.info("Finish init Cell Buffer Manager.");
     }
 
-    private void refresh(String name) {
-        CellBuffer cellBuffer = CACHE_MAP.getOrDefault(name, new CellBuffer());
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(name);
-                if (cellRegistry == null) {
-                    throw new CellException(String.format("Cell registry ( %s ) not exist.", name));
-                }
-                // TODO: 2023/10/20  最大值检测，超过最大值从头min开始滚动
-                // TODO: 2023/10/24 根据实际qps情况动态调整buffer value的step问题 ,“快＋慢-” 策略
-                cellRegistryRepository.updateValueByName(name, cellRegistry.getValue() + cellRegistry.getStep());
-            }
-        });
+    /**
+     * Get cell sequence value.
+     *
+     * @param name cell name
+     * @return value
+     */
+    public int getSequence(String name) {
+        CellAssert.isTrue(ready, "Cell Buffer Manager is not ready yet.");
 
-
-    }
-
-    public long getSequence(String name) {
-        if (!ready) {
-            throw new CellException("Cell Buffer Manager is not ready yet.");
-        }
         CellBuffer cellBuffer = CACHE_MAP.get(name);
-        if (cellBuffer == null) {
-            throw new CellException(String.format("cell (%s) buffer is null.", name));
-        }
+        CellAssert.notNull(cellBuffer, "cell (%s) buffer is null.", name);
 
         if (!cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())) {
             return cellBuffer.nextValue();
         }
-        //  do expand
-        doExpand(cellBuffer);
-        return cellBuffer.nextValue();
+        return doExpandAndGet(cellBuffer);
     }
 
-    private void doExpand(CellBuffer cellBuffer) {
-        Lock lock = cellBuffer.getLock().writeLock();
-        lock.lock();
-
+    /**
+     * To expand cell buffer and get sequence value.
+     *
+     * @param cellBuffer ${@link CellBuffer}
+     * @return value
+     */
+    private int doExpandAndGet(CellBuffer cellBuffer) {
+        Lock rLock = cellBuffer.getLock().readLock();
+        rLock.lock();
         try {
-            executorService.execute(() -> {
-                refresh(cellBuffer.getName());
-                cellBuffer.setNextReady(true);
-            });
-            // TODO: 2023/10/19
+            while (true) {
+                if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
+                        && cellBuffer.getExpanding().compareAndSet(false, true)) {
+                    executorService.execute(() -> {
+                        boolean update = false;
+                        try {
+                            refresh(cellBuffer);
+                            update = true;
+                        } finally {
+                            if (update) {
+                                Lock wLock = cellBuffer.getLock().writeLock();
+                                cellBuffer.setNextReady(true);
+                                wLock.unlock();
+                            }
+                        }
+                        cellBuffer.getExpanding().compareAndSet(true, false);
+                    });
+                }
+                int value = cellBuffer.nextValue();
+                if (value <= cellBuffer.getMaxValue()) {
+                    return value;
+                }
+                spinWaitAndSleep(cellBuffer);
+            }
         } finally {
-            lock.unlock();
+            rLock.unlock();
+        }
+    }
+
+    /**
+     * Refresh cell buffer.
+     *
+     * @param cellBuffer ${@link CellBuffer}
+     */
+    private void refresh(CellBuffer cellBuffer) {
+        int minStep = bufferConfig.getMinStep();
+        int maxStep = bufferConfig.getMaxStep();
+        long bufferRefreshInterval = bufferConfig.getBufferRefreshInterval();
+
+        int step = cellBuffer.getStep();
+        long interval = System.currentTimeMillis() - cellBuffer.getRefreshTimestamp();
+
+        // Dynamically adjust the expansion speed based on actual consumption
+        if (interval < bufferRefreshInterval) {
+            step = step * 2 <= maxStep ? step * 2 : step;
+        } else if (interval >= 2 * bufferRefreshInterval) {
+            step = step / 2 >= minStep ? step / 2 : step;
         }
 
+        CellRegistry cellRegistry = cellRegistryRepository.updateValueAndGet(cellBuffer.getName(), step);
+        CellAssert.notNull(cellRegistry, "Cell registry (%s) not exist", cellBuffer.getName());
+        cellRegistry.setStep(step);
+
+        cellBuffer.fillBuffer(cellRegistry);
+
+        log.info("Refresh cell buffer ({}) completed, step={}, interval={}, minStep={}, maxStep={}, bufferRefreshInterval={}",
+                cellBuffer.getName(), step, interval, minStep, maxStep, bufferRefreshInterval);
+    }
+
+    /**
+     * Let current thread to spin wait while the cell buffer is expanding,
+     * but sleep with max spin.
+     *
+     * @param cellBuffer
+     */
+    private void spinWaitAndSleep(CellBuffer cellBuffer) {
+        int spinNum = 0;
+        while (cellBuffer.getExpanding().get()) {
+            spinNum += 1;
+            if (spinNum > 10000) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    log.warn("Thread {} Interrupted", Thread.currentThread().getName());
+                }
+                break;
+            }
+        }
+    }
+
+    public void setBufferConfig(BufferConfiguration bufferConfig) {
+        this.bufferConfig = bufferConfig;
     }
 }
