@@ -14,9 +14,10 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core.configuration;
+package com.lazycece.cell.specification.configuration;
 
-import com.lazycece.cell.core.specification.CellType;
+
+import com.lazycece.cell.specification.model.CellType;
 
 /**
  * @author lazycece
