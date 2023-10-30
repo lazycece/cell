@@ -43,12 +43,12 @@ public class CellConfiguration {
     /**
      * min value
      */
-    private Long minValue = 0L;
+    private Integer minValue = 0;
 
     /**
      * max value
      */
-    private Long maxValue = 9999999999L;
+    private Integer maxValue = Integer.MAX_VALUE;
 
     /**
      * the step, that the interval size of the value.
@@ -79,19 +79,19 @@ public class CellConfiguration {
         this.machine = machine;
     }
 
-    public Long getMinValue() {
+    public Integer getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(Long minValue) {
+    public void setMinValue(Integer minValue) {
         this.minValue = minValue;
     }
 
-    public Long getMaxValue() {
+    public Integer getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(Long maxValue) {
+    public void setMaxValue(Integer maxValue) {
         this.maxValue = maxValue;
     }
 

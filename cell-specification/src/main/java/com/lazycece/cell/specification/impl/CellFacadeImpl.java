@@ -14,16 +14,18 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.core;
+package com.lazycece.cell.specification.impl;
 
 import com.lazycece.cell.core.buffer.CellBufferManager;
-import com.lazycece.cell.core.configuration.CellConfiguration;
-import com.lazycece.cell.core.exception.CellException;
+import com.lazycece.cell.core.exception.CellAssert;
+import com.lazycece.cell.specification.configuration.CellConfiguration;
 import com.lazycece.cell.core.infra.repository.CellRegistryRepository;
 import com.lazycece.cell.core.model.CellRegistry;
-import com.lazycece.cell.core.specification.Cell;
-import com.lazycece.cell.core.specification.CellBuilder;
-import com.lazycece.cell.core.specification.CellType;
+import com.lazycece.cell.specification.CellFacade;
+import com.lazycece.cell.specification.factory.CellRegistryFactory;
+import com.lazycece.cell.specification.model.Cell;
+import com.lazycece.cell.specification.model.CellBuilder;
+import com.lazycece.cell.specification.model.CellType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,9 +59,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
      */
     @Override
     public String generateId(CellType cellType) {
-        if (cellType == null) {
-            throw new CellException("invalid cell type.");
-        }
+        CellAssert.notNull(cellType, "invalid cell type.");
         long value = CellBufferManager.getInstance().getSequence(cellType.name());
         Cell cell = CellBuilder.builder()
                 .code(cellType.code())
@@ -77,9 +77,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         boolean exist = cellRegistryRepository.existCellRegistry();
-        if (!exist) {
-            throw new CellException("There is no cell registry table in db.");
-        }
+        CellAssert.isTrue(exist, "There is no cell registry table in db.");
         initCellRegistry();
         CellBufferManager.getInstance().initCache();
         log.info("Cell started successfully !");
@@ -87,20 +85,17 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
 
     private void initCellRegistry() {
         Class<? extends CellType> cellTypeClass = cellConfiguration.getCellTypeClass();
-        if (cellTypeClass == null) {
-            throw new CellException("Cell configuration (cell type class) not exist.");
-        }
-        if (!cellTypeClass.isEnum()) {
-            throw new CellException("Cell configuration (cell type class) not enum.");
-        }
+        CellAssert.notNull(cellTypeClass, "Cell configuration (cell type class) not exist.");
+        CellAssert.isTrue(cellTypeClass.isEnum(), "Cell configuration (cell type class) not enum.");
+
         Arrays.asList(cellTypeClass.getEnumConstants())
                 .forEach(cellType ->
                         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                             @Override
                             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(cellType.name());
+                                CellRegistry cellRegistry = cellRegistryRepository.queryByName(cellType.name());
                                 if (cellRegistry == null) {
-                                    cellRegistry = CellRegistry.init(cellType, cellConfiguration);
+                                    cellRegistry = CellRegistryFactory.build(cellType, cellConfiguration);
                                     cellRegistryRepository.save(cellRegistry);
                                 }
                             }
