@@ -26,30 +26,26 @@
     <artifactId>cell-core</artifactId>
     <name>${project.artifactId}</name>
 
-    <properties>
-        <slf4j.version>2.0.5</slf4j.version>
-        <spring.version>5.3.12</spring.version>
-    </properties>
-
     <dependencies>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
-
 </project>
