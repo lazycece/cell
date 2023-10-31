@@ -28,6 +28,26 @@ public class BufferConfiguration {
     private double expansionThreshold = 0.75;
 
     /**
+     * Cell buffer refresh interval time (milliseconds)
+     * <p>
+     * Compute by qps and default step, for example
+     * <li>condition: step=6000, qps=10</li>
+     * <li>then: interval=step/qps=600s </li>
+     * </p>
+     */
+    private long expansionInterval = 10 * 60 * 1000;
+
+    /**
+     * Cell buffer expansion min step.
+     */
+    private int expansionMinStep = 1500;
+
+    /**
+     * Cell buffer expansion max step.
+     */
+    private int expansionMaxStep = 6000;
+
+    /**
      * Cell buffer thread pool core size, default value is 5
      */
     private int threadPoolCoreSize = 5;
@@ -42,12 +62,37 @@ public class BufferConfiguration {
      */
     private long threadPoolKeepAliveTime = 60L;
 
+
     public double getExpansionThreshold() {
         return expansionThreshold;
     }
 
     public void setExpansionThreshold(double expansionThreshold) {
         this.expansionThreshold = expansionThreshold;
+    }
+
+    public long getExpansionInterval() {
+        return expansionInterval;
+    }
+
+    public void setExpansionInterval(long expansionInterval) {
+        this.expansionInterval = expansionInterval;
+    }
+
+    public int getExpansionMinStep() {
+        return expansionMinStep;
+    }
+
+    public void setExpansionMinStep(int expansionMinStep) {
+        this.expansionMinStep = expansionMinStep;
+    }
+
+    public int getExpansionMaxStep() {
+        return expansionMaxStep;
+    }
+
+    public void setExpansionMaxStep(int expansionMaxStep) {
+        this.expansionMaxStep = expansionMaxStep;
     }
 
     public int getThreadPoolCoreSize() {
