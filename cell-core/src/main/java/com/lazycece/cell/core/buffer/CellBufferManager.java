@@ -40,7 +40,7 @@ public class CellBufferManager {
     private final Logger log = LoggerFactory.getLogger(CellBufferManager.class);
     private static CellBufferManager INSTANCE;
     private final ConcurrentHashMap<String/*name*/, CellBuffer> CACHE_MAP = new ConcurrentHashMap<>();
-    private BufferConfiguration bufferConfig;
+    private BufferConfiguration bufferConfig = new BufferConfiguration();
     private volatile boolean ready = false;
     private final ExecutorService executorService = new ThreadPoolExecutor(
             bufferConfig.getThreadPoolCoreSize(),
@@ -123,14 +123,17 @@ public class CellBufferManager {
                         try {
                             refresh(cellBuffer);
                             update = true;
+                        } catch (Exception e) {
+                            log.warn("Refresh cell buffer ({}) fail.", cellBuffer.getName(), e);
                         } finally {
                             if (update) {
                                 Lock wLock = cellBuffer.getLock().writeLock();
+                                wLock.lock();
                                 cellBuffer.setNextReady(true);
                                 wLock.unlock();
                             }
+                            cellBuffer.getExpanding().compareAndSet(true, false);
                         }
-                        cellBuffer.getExpanding().compareAndSet(true, false);
                     });
                 }
                 int value = cellBuffer.nextValue();
@@ -150,9 +153,9 @@ public class CellBufferManager {
      * @param cellBuffer ${@link CellBuffer}
      */
     private void refresh(CellBuffer cellBuffer) {
-        int minStep = bufferConfig.getMinStep();
-        int maxStep = bufferConfig.getMaxStep();
-        long bufferRefreshInterval = bufferConfig.getBufferRefreshInterval();
+        int minStep = bufferConfig.getExpansionMinStep();
+        int maxStep = bufferConfig.getExpansionMaxStep();
+        long bufferRefreshInterval = bufferConfig.getExpansionInterval();
 
         int step = cellBuffer.currentBufferValue().getStep();
         long interval = System.currentTimeMillis() - cellBuffer.getRefreshTimestamp();
