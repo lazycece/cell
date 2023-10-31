@@ -45,7 +45,7 @@ public class BufferConfiguration {
     /**
      * Cell buffer expansion max step.
      */
-    private int expansionMaxStep = 6000;
+    private int expansionMaxStep = 24000;
 
     /**
      * Cell buffer thread pool core size, default value is 5
