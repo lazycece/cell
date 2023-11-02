@@ -97,6 +97,11 @@ public class CellBuffer {
         return percentage >= threshold;
     }
 
+    /**
+     * Get current cell buffer value.
+     *
+     * @return see ${@link BufferValue}
+     */
     public BufferValue currentBufferValue() {
         return bufferValues[pointer];
     }
