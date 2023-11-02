@@ -115,7 +115,7 @@ public class CellBuffer {
         int nextVal = currentBufferValue().getValue().getAndIncrement();
         if (nextVal > maxValue && nextReady) {
             resetPointer();
-            nextReady = false;
+            setNextReady(false);
             nextVal = currentBufferValue().getValue().getAndIncrement();
         }
         return nextVal;
