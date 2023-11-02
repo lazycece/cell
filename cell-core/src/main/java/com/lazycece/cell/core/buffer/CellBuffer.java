@@ -20,6 +20,7 @@ import com.lazycece.cell.core.model.CellRegistry;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -114,9 +115,16 @@ public class CellBuffer {
     public int nextValue() {
         int nextVal = currentBufferValue().getAndIncrement();
         if (nextVal > maxValue && nextReady) {
-            resetPointer();
-            setNextReady(false);
-            nextVal = currentBufferValue().getAndIncrement();
+            Lock wLock = lock.writeLock();
+            try {
+                if (nextReady) {
+                    resetPointer();
+                    setNextReady(false);
+                    nextVal = currentBufferValue().getAndIncrement();
+                }
+            } finally {
+                wLock.unlock();
+            }
         }
         return nextVal;
     }

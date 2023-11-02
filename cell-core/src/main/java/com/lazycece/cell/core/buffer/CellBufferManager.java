@@ -18,14 +18,15 @@ package com.lazycece.cell.core.buffer;
 
 import com.lazycece.cell.core.configuration.BufferConfiguration;
 import com.lazycece.cell.core.exception.CellAssert;
+import com.lazycece.cell.core.exception.CellException;
 import com.lazycece.cell.core.infra.repository.CellRegistryRepository;
 import com.lazycece.cell.core.model.CellRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -35,29 +36,39 @@ import java.util.concurrent.locks.Lock;
  * @date 2023/9/9
  */
 @Component
-public class CellBufferManager {
+public class CellBufferManager implements InitializingBean {
 
     private final Logger log = LoggerFactory.getLogger(CellBufferManager.class);
     private static CellBufferManager INSTANCE;
     private final ConcurrentHashMap<String/*name*/, CellBuffer> CACHE_MAP = new ConcurrentHashMap<>();
     private BufferConfiguration bufferConfig = new BufferConfiguration();
     private volatile boolean ready = false;
-    private final ExecutorService executorService = new ThreadPoolExecutor(
-            bufferConfig.getThreadPoolCoreSize(),
-            bufferConfig.getThreadPoolMaxSize(),
-            bufferConfig.getThreadPoolKeepAliveTime(),
-            TimeUnit.SECONDS,
-            new SynchronousQueue<>(),
-            new BufferThreadFactory("CellBufferRefresher"),
-            new ThreadPoolExecutor.AbortPolicy());
+    private ExecutorService executorService;
     @Autowired
     private CellRegistryRepository cellRegistryRepository;
 
-    @PostConstruct
-    public void init() {
+    /**
+     * Cell buffer manager init .
+     * <p>You can custom the buffer config while spring bean initial.</p>
+     */
+    @Override
+    public void afterPropertiesSet() {
+        executorService = new ThreadPoolExecutor(
+                bufferConfig.getThreadPoolCoreSize(),
+                bufferConfig.getThreadPoolMaxSize(),
+                bufferConfig.getThreadPoolKeepAliveTime(),
+                TimeUnit.SECONDS,
+                new SynchronousQueue<>(),
+                new BufferThreadFactory("CellBufferRefresher"),
+                new ThreadPoolExecutor.AbortPolicy());
         INSTANCE = this;
     }
 
+    /**
+     * CellBufferManager instance.
+     *
+     * @return see ${@link CellBufferManager}
+     */
     public static CellBufferManager getInstance() {
         return INSTANCE;
     }
@@ -99,71 +110,79 @@ public class CellBufferManager {
         CellBuffer cellBuffer = CACHE_MAP.get(name);
         CellAssert.notNull(cellBuffer, "cell (%s) buffer is null.", name);
 
-        if (!cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())) {
-            return cellBuffer.nextValue();
-        }
-        return doExpandAndGet(cellBuffer);
-    }
-
-    /**
-     * To expand cell buffer and get sequence value.
-     *
-     * @param cellBuffer ${@link CellBuffer}
-     * @return value
-     */
-    private int doExpandAndGet(CellBuffer cellBuffer) {
         Lock rLock = cellBuffer.getLock().readLock();
         rLock.lock();
         try {
-            while (true) {
-                if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
-                        && cellBuffer.getExpanding().compareAndSet(false, true)) {
-                    executorService.execute(() -> {
-                        boolean update = false;
-                        try {
-                            refresh(cellBuffer);
-                            update = true;
-                        } catch (Exception e) {
-                            log.warn("Refresh cell buffer ({}) fail.", cellBuffer.getName(), e);
-                        } finally {
-                            if (update) {
-                                Lock wLock = cellBuffer.getLock().writeLock();
-                                wLock.lock();
-                                cellBuffer.setNextReady(true);
-                                wLock.unlock();
-                            }
-                            cellBuffer.getExpanding().compareAndSet(true, false);
-                        }
-                    });
-                }
-                int value = cellBuffer.nextValue();
-                if (value <= cellBuffer.getMaxValue()) {
-                    return value;
-                }
-                spinWaitAndSleep(cellBuffer);
-            }
+            return getSequenceAndExpandIfNeed(cellBuffer);
         } finally {
             rLock.unlock();
         }
     }
 
     /**
-     * Refresh cell buffer.
+     * Get cell sequence value, it will expand if necessary.
+     *
+     * @param cellBuffer ${@link CellBuffer}
+     * @return value
+     */
+    private int getSequenceAndExpandIfNeed(CellBuffer cellBuffer) {
+        long time = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - time) > 50) {
+            if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
+                    && cellBuffer.getExpanding().compareAndSet(false, true)) {
+                asyncExpand(cellBuffer);
+            }
+            int value = cellBuffer.nextValue();
+            if (value <= cellBuffer.getMaxValue()) {
+                return value;
+            }
+            spinWaitAndSleep(cellBuffer);
+        }
+        throw new CellException("Get sequence timeout.");
+    }
+
+    /**
+     * To expand cell buffer.
      *
      * @param cellBuffer ${@link CellBuffer}
      */
-    private void refresh(CellBuffer cellBuffer) {
+    private void asyncExpand(CellBuffer cellBuffer) {
+        executorService.execute(() -> {
+            boolean update = false;
+            try {
+                doExpand(cellBuffer);
+                update = true;
+            } catch (Exception e) {
+                log.warn("Refresh cell buffer ({}) fail.", cellBuffer.getName(), e);
+            } finally {
+                if (update) {
+                    Lock wLock = cellBuffer.getLock().writeLock();
+                    wLock.lock();
+                    cellBuffer.setNextReady(true);
+                    wLock.unlock();
+                }
+                cellBuffer.getExpanding().compareAndSet(true, false);
+            }
+        });
+    }
+
+    /**
+     * Expand cell buffer.
+     *
+     * @param cellBuffer ${@link CellBuffer}
+     */
+    private void doExpand(CellBuffer cellBuffer) {
         int minStep = bufferConfig.getExpansionMinStep();
         int maxStep = bufferConfig.getExpansionMaxStep();
-        long bufferRefreshInterval = bufferConfig.getExpansionInterval();
+        long bufferExpansionInterval = bufferConfig.getExpansionInterval();
 
         int step = cellBuffer.currentBufferValue().getStep();
         long interval = System.currentTimeMillis() - cellBuffer.getRefreshTimestamp();
 
         // Dynamically adjust the expansion speed based on actual consumption
-        if (interval < bufferRefreshInterval) {
+        if (interval < bufferExpansionInterval) {
             step = step * 2 <= maxStep ? step * 2 : step;
-        } else if (interval >= 2 * bufferRefreshInterval) {
+        } else if (interval >= 2 * bufferExpansionInterval) {
             step = step / 2 >= minStep ? step / 2 : step;
         }
 
@@ -173,8 +192,8 @@ public class CellBufferManager {
 
         cellBuffer.fillBuffer(cellRegistry);
 
-        log.info("Refresh cell buffer ({}) completed, step={}, interval={}, minStep={}, maxStep={}, bufferRefreshInterval={}",
-                cellBuffer.getName(), step, interval, minStep, maxStep, bufferRefreshInterval);
+        log.info("Expand cell buffer ({}) completed, step={}, interval={}, minStep={}, maxStep={}, bufferExpansionInterval={}",
+                cellBuffer.getName(), step, interval, minStep, maxStep, bufferExpansionInterval);
     }
 
     /**
