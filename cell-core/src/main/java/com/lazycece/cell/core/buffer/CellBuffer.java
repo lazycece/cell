@@ -55,7 +55,7 @@ public class CellBuffer {
     /**
      * indicates the buffer is expanding or not.
      */
-    private AtomicBoolean expanding = new AtomicBoolean(false);
+    private final AtomicBoolean expanding = new AtomicBoolean(false);
 
     /**
      * buffer refresh time (milliseconds)
@@ -91,7 +91,7 @@ public class CellBuffer {
             return false;
         }
         BufferValue bufferValue = currentBufferValue();
-        int value = bufferValue.getValue().intValue();
+        int value = bufferValue.getCurrentValue();
         int step = bufferValue.getStep();
         double percentage = value % step / (double) step;
         return percentage >= threshold;
@@ -112,11 +112,11 @@ public class CellBuffer {
      * @return next value
      */
     public int nextValue() {
-        int nextVal = currentBufferValue().getValue().getAndIncrement();
+        int nextVal = currentBufferValue().getAndIncrement();
         if (nextVal > maxValue && nextReady) {
             resetPointer();
             setNextReady(false);
-            nextVal = currentBufferValue().getValue().getAndIncrement();
+            nextVal = currentBufferValue().getAndIncrement();
         }
         return nextVal;
     }

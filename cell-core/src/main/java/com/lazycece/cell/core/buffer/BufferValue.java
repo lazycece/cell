@@ -39,8 +39,12 @@ public class BufferValue {
         this.step = step;
     }
 
-    public AtomicInteger getValue() {
-        return value;
+    public int getAndIncrement() {
+        return value.getAndIncrement();
+    }
+
+    public int getCurrentValue() {
+        return value.intValue();
     }
 
     public int getStep() {
