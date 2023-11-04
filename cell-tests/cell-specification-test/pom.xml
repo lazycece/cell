@@ -21,15 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.lazycece.cell</groupId>
-        <artifactId>cell-parent</artifactId>
+        <artifactId>cell-tests</artifactId>
         <version>${revision}</version>
     </parent>
-    <packaging>pom</packaging>
-    <artifactId>cell-tests</artifactId>
+
+    <artifactId>cell-specification-test</artifactId>
     <name>${project.artifactId}</name>
 
-    <modules>
-        <module>cell-core-test</module>
-        <module>cell-specification-test</module>
-    </modules>
 </project>
