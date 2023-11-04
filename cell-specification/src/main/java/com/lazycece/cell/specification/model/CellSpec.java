@@ -23,12 +23,33 @@ import java.util.Date;
 
 /**
  * Define the cell specification .
+ *
  * <p>
- * The length of cell-id is 24, and consists of the following information:
- * <br/>
- * date(8) + code(3) + center(1) + machine(2) + sequence(10).
- * <br/>
- * For example: [20991231] [003] [0] [01] [0000000001]
+ * It has three pattern: day, hour, minute
+ * </p>
+ * <p>
+ * The day pattern, length of cell-id is 24, as follow:
+ * <ul>
+ * <li>component: date(8) + code(3) + center(1) + machine(2) + sequence(10)</li>
+ * <li>example: [20231004] [001] [1] [01] [2147483647]</li>
+ * <li>support max qps = <code>Integer.MAX_VALUE</code>/24/60/60 = 24855 </li>
+ * </ul>
+ * </p>
+ * <p>
+ * The hour pattern, length of cell-id is 26, as follow:
+ * <ul>
+ * <li>component: date(8) + code(3) + center(1) + machine(2) + hour(2) + sequence(10)</li>
+ * <li>example: [20231004] [001] [0] [01] [11] [2147483647]</li>
+ * <li>support max qps = <code>Integer.MAX_VALUE</code>/60/60 = 596523 </li>
+ * </ul>
+ * </p>
+ * <p>
+ * The minute pattern, length of cell-id is 28, as follow:
+ * <ul>
+ * <li>component: date(8) + code(3) + center(1) + machine(2) + hour(2) + minute(2) + sequence(10)</li>
+ * <li>example: [20231004] [001] [0] [01] [11] [58] [2147483647]</li>
+ * <li>support max qps = <code>Integer.MAX_VALUE</code>/60 = 35791394 </li>
+ * </ul>
  * </p>
  *
  * @author lazycece
