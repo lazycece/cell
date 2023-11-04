@@ -74,22 +74,22 @@ public class CellSpec {
     private String dataCenterElement(Integer dataCenter) {
         notNull(dataCenter);
         expectedLength(String.valueOf(dataCenter), CELL_DATA_CENTER_LEN);
-        return fillElement(Integer.toUnsignedLong(dataCenter), CELL_DATA_CENTER_LEN);
+        return fillElement(dataCenter, CELL_DATA_CENTER_LEN);
     }
 
     private String machineElement(Integer machine) {
         notNull(machine);
         expectedLength(String.valueOf(machine), CELL_MACHINE_LEN);
-        return fillElement(Integer.toUnsignedLong(machine), CELL_MACHINE_LEN);
+        return fillElement(machine, CELL_MACHINE_LEN);
     }
 
-    private String sequenceElement(Long sequence) {
+    private String sequenceElement(Integer sequence) {
         notNull(sequence);
         expectedLength(String.valueOf(sequence), CELL_SEQUENCE_LEN);
         return fillElement(sequence, CELL_SEQUENCE_LEN);
     }
 
-    private String fillElement(Long element, int len) {
+    private String fillElement(Integer element, int len) {
         String value = String.valueOf(element);
         int gap = len - value.length();
         while (gap-- > 0) {
