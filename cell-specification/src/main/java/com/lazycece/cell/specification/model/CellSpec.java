@@ -113,14 +113,11 @@ public class CellSpec {
         notNull(pattern);
         SimpleDateFormat sdf = new SimpleDateFormat(CELL_TIME_FORMAT);
         String time = sdf.format(date);
-        switch (pattern) {
-            case HOUR:
-                return time.substring(0, CELL_HOUR_LEN);
-            case MINUTE:
-                return time.substring(0, CELL_MINUTE_LEN);
-            default:
-                return "";
-        }
+        return switch (pattern) {
+            case HOUR -> time.substring(0, CELL_HOUR_LEN);
+            case MINUTE -> time.substring(0, CELL_MINUTE_LEN);
+            default -> "";
+        };
     }
 
     private String sequenceElement(Integer sequence) {
