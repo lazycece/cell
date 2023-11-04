@@ -15,6 +15,8 @@
  */
 
 /**
+ * Cell core module.
+ *
  * @author lazycece
  * @date 2023/8/30
  */
