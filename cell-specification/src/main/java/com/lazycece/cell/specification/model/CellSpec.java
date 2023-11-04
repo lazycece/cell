@@ -16,7 +16,7 @@
 
 package com.lazycece.cell.specification.model;
 
-import com.lazycece.cell.core.exception.CellException;
+import com.lazycece.cell.specification.exception.CellSpecException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,13 +55,17 @@ import java.util.Date;
  * @author lazycece
  * @date 2023/8/31
  * @see Cell
+ * @see CellPattern
  */
 public class CellSpec {
 
     private static final String CELL_DATE_FORMAT = "yyyyMMdd";
+    private static final String CELL_TIME_FORMAT = "HHmmss";
     private static final int CELL_CODE_LEN = 3;
     private static final int CELL_DATA_CENTER_LEN = 1;
     private static final int CELL_MACHINE_LEN = 2;
+    private static final int CELL_HOUR_LEN = 2;
+    private static final int CELL_MINUTE_LEN = 4;
     private static final int CELL_SEQUENCE_LEN = 10;
 
     private static final CellSpec instance = new CellSpec();
@@ -75,10 +79,10 @@ public class CellSpec {
         String code = codeElement(cell.getCode());
         String dataCenter = dataCenterElement(cell.getDataCenter());
         String machine = machineElement(cell.getMachine());
+        String time = timeElement(cell.getDate(), cell.getPattern());
         String sequence = sequenceElement(cell.getSequence());
-        return String.format("%s%s%s%s%s", date, code, dataCenter, machine, sequence);
+        return String.format("%s%s%s%s%s%s", date, code, dataCenter, machine, time, sequence);
     }
-
 
     private String dateElement(Date date) {
         notNull(date);
@@ -104,6 +108,21 @@ public class CellSpec {
         return fillElement(machine, CELL_MACHINE_LEN);
     }
 
+    private String timeElement(Date date, CellPattern pattern) {
+        notNull(date);
+        notNull(pattern);
+        SimpleDateFormat sdf = new SimpleDateFormat(CELL_TIME_FORMAT);
+        String time = sdf.format(date);
+        switch (pattern) {
+            case HOUR:
+                return time.substring(0, CELL_HOUR_LEN);
+            case MINUTE:
+                return time.substring(0, CELL_MINUTE_LEN);
+            default:
+                return "";
+        }
+    }
+
     private String sequenceElement(Integer sequence) {
         notNull(sequence);
         expectedLength(String.valueOf(sequence), CELL_SEQUENCE_LEN);
@@ -121,19 +140,19 @@ public class CellSpec {
 
     private static void notNull(Object element) {
         if (element == null) {
-            throw new CellException("cell element is null");
+            throw new CellSpecException("cell element is null");
         }
     }
 
     private static void notBlank(String element) {
         if (element == null || element.trim().length() == 0) {
-            throw new CellException("cell element is blank");
+            throw new CellSpecException("cell element is blank");
         }
     }
 
     private static void expectedLength(String element, int len) {
-        if (element.length() != len) {
-            throw new CellException(String.format("cell element(%s) not expected length(%s)", element, len));
+        if (element.length() <= len) {
+            throw new CellSpecException(String.format("cell element(%s) not expected length(%s)", element, len));
         }
     }
 }

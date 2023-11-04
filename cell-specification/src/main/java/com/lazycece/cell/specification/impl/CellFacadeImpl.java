@@ -52,7 +52,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
     private CellRegistryRepository cellRegistryRepository;
     @Autowired
     private TransactionTemplate transactionTemplate;
-    private CellConfiguration cellConfiguration;
+    private CellConfiguration configuration;
 
     /**
      * @see CellFacade#generateId
@@ -60,12 +60,13 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
     @Override
     public String generateId(CellType cellType) {
         CellAssert.notNull(cellType, "invalid cell type.");
-        long value = CellBufferManager.getInstance().getSequence(cellType.name());
+        int value = CellBufferManager.getInstance().getSequence(cellType.name());
         Cell cell = CellBuilder.builder()
+                .pattern(configuration.getPattern())
                 .code(cellType.code())
                 .date(new Date())
-                .dataCenter(cellConfiguration.getDataCenter())
-                .machine(cellConfiguration.getMachine())
+                .dataCenter(configuration.getDataCenter())
+                .machine(configuration.getMachine())
                 .sequence(value)
                 .build();
         return cell.toString();
@@ -75,16 +76,16 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
      * @see InitializingBean#afterPropertiesSet
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         boolean exist = cellRegistryRepository.existCellRegistry();
-        CellAssert.isTrue(exist, "There is no cell registry table in db.");
+        CellAssert.isTrue(exist, "The expected table(cell_registry) not exist in db.");
         initCellRegistry();
         CellBufferManager.getInstance().initCache();
         log.info("Cell started successfully !");
     }
 
     private void initCellRegistry() {
-        Class<? extends CellType> cellTypeClass = cellConfiguration.getCellTypeClass();
+        Class<? extends CellType> cellTypeClass = configuration.getCellTypeClass();
         CellAssert.notNull(cellTypeClass, "Cell configuration (cell type class) not exist.");
         CellAssert.isTrue(cellTypeClass.isEnum(), "Cell configuration (cell type class) not enum.");
 
@@ -95,7 +96,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
                             protected void doInTransactionWithoutResult(TransactionStatus status) {
                                 CellRegistry cellRegistry = cellRegistryRepository.queryByName(cellType.name());
                                 if (cellRegistry == null) {
-                                    cellRegistry = CellRegistryFactory.build(cellType, cellConfiguration);
+                                    cellRegistry = CellRegistryFactory.build(cellType, configuration);
                                     cellRegistryRepository.save(cellRegistry);
                                 }
                             }

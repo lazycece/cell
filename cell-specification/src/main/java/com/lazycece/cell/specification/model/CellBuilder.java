@@ -34,6 +34,11 @@ public class CellBuilder {
         return new CellBuilder(new Cell());
     }
 
+    public CellBuilder pattern(CellPattern pattern) {
+        cell.setPattern(pattern);
+        return this;
+    }
+
     public CellBuilder code(String code) {
         cell.setCode(code);
         return this;

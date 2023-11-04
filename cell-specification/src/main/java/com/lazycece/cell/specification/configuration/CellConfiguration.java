@@ -17,6 +17,7 @@
 package com.lazycece.cell.specification.configuration;
 
 
+import com.lazycece.cell.specification.model.CellPattern;
 import com.lazycece.cell.specification.model.CellType;
 
 /**
@@ -24,6 +25,13 @@ import com.lazycece.cell.specification.model.CellType;
  * @date 2023/10/20
  */
 public class CellConfiguration {
+
+    /**
+     * The cell pattern
+     *
+     * @see CellPattern
+     */
+    private CellPattern pattern = CellPattern.DAY;
 
     /**
      * The cell type class
@@ -53,7 +61,15 @@ public class CellConfiguration {
     /**
      * the step, that the interval size of the value.
      */
-    private Integer step = 1000;
+    private Integer step = 6000;
+
+    public CellPattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(CellPattern pattern) {
+        this.pattern = pattern;
+    }
 
     public Class<? extends CellType> getCellTypeClass() {
         return cellTypeClass;

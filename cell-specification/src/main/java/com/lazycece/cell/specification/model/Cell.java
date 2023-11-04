@@ -27,6 +27,10 @@ import java.util.Date;
 public class Cell {
 
     /**
+     * The cell pattern
+     */
+    private CellPattern pattern;
+    /**
      * The cell code
      */
     private String code;
@@ -46,6 +50,14 @@ public class Cell {
      * The sequence
      */
     private Integer sequence;
+
+    public CellPattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(CellPattern pattern) {
+        this.pattern = pattern;
+    }
 
     public String getCode() {
         return code;
