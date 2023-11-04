@@ -51,7 +51,6 @@
         <module>cell-spring-boot-stater</module>
         <module>cell-tests</module>
         <module>cell-samples</module>
-        <module>cell-tests</module>
     </modules>
 
     <properties>
