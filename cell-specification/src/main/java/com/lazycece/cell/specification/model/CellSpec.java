@@ -59,14 +59,14 @@ import java.util.Date;
  */
 public class CellSpec {
 
-    private static final String CELL_DATE_FORMAT = "yyyyMMdd";
-    private static final String CELL_TIME_FORMAT = "HHmmss";
-    private static final int CELL_CODE_LEN = 3;
-    private static final int CELL_DATA_CENTER_LEN = 1;
-    private static final int CELL_MACHINE_LEN = 2;
+    public static final int CELL_CODE_LEN = 3;
+    public static final int CELL_DATA_CENTER_LEN = 1;
+    public static final int CELL_MACHINE_LEN = 2;
     private static final int CELL_HOUR_LEN = 2;
     private static final int CELL_MINUTE_LEN = 4;
     private static final int CELL_SEQUENCE_LEN = 10;
+    private static final String CELL_DATE_FORMAT = "yyyyMMdd";
+    private static final String CELL_TIME_FORMAT = "HHmmss";
 
     private static final CellSpec instance = new CellSpec();
 
@@ -135,19 +135,19 @@ public class CellSpec {
         return value;
     }
 
-    private static void notNull(Object element) {
+    private void notNull(Object element) {
         if (element == null) {
             throw new CellSpecException("cell element is null");
         }
     }
 
-    private static void notBlank(String element) {
+    private void notBlank(String element) {
         if (element == null || element.trim().length() == 0) {
             throw new CellSpecException("cell element is blank");
         }
     }
 
-    private static void expectedLength(String element, int len) {
+    private void expectedLength(String element, int len) {
         if (element.length() <= len) {
             throw new CellSpecException(String.format("cell element(%s) not expected length(%s)", element, len));
         }
