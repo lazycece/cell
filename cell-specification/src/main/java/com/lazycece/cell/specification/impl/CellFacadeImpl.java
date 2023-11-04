@@ -48,11 +48,11 @@ import java.util.Date;
 public class CellFacadeImpl implements CellFacade, InitializingBean {
 
     private final Logger log = LoggerFactory.getLogger(CellFacadeImpl.class);
+    private CellConfiguration configuration = new CellConfiguration();
     @Autowired
     private CellRegistryRepository cellRegistryRepository;
     @Autowired
     private TransactionTemplate transactionTemplate;
-    private CellConfiguration configuration;
 
     /**
      * @see CellFacade#generateId
@@ -81,9 +81,12 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
         CellAssert.isTrue(exist, "The expected table(cell_registry) not exist in db.");
         initCellRegistry();
         CellBufferManager.getInstance().initCache();
-        log.info("Cell started successfully !");
+        log.info("Cell started successfully.");
     }
 
+    /**
+     * init cell registry to db.
+     */
     private void initCellRegistry() {
         Class<? extends CellType> cellTypeClass = configuration.getCellTypeClass();
         CellAssert.notNull(cellTypeClass, "Cell configuration (cell type class) not exist.");
@@ -94,7 +97,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
                         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                             @Override
                             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                                CellRegistry cellRegistry = cellRegistryRepository.queryByName(cellType.name());
+                                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(cellType.name());
                                 if (cellRegistry == null) {
                                     cellRegistry = CellRegistryFactory.build(cellType, configuration);
                                     cellRegistryRepository.save(cellRegistry);
@@ -102,5 +105,9 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
                             }
                         })
                 );
+    }
+
+    public void setConfiguration(CellConfiguration configuration) {
+        this.configuration = configuration;
     }
 }

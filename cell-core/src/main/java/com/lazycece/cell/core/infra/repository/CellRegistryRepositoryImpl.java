@@ -74,6 +74,15 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
     }
 
     /**
+     * @see CellRegistryRepository#lockQueryByName
+     */
+    @Override
+    public CellRegistry lockQueryByName(String name) {
+        CellRegistryPO po = cellRegistryMapper.lockFindByName(name);
+        return CellRegistryConverter.toCellRegistry(po);
+    }
+
+    /**
      * @see CellRegistryRepository#updateValueAndGet(String)
      */
     @Override

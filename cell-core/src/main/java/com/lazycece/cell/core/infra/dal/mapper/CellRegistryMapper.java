@@ -49,7 +49,7 @@ public interface CellRegistryMapper {
      * @param name cell name
      * @return see ${@link CellRegistryPO}
      */
-    @Select("SELECT id, name, value, min_value, max_value, step, create_time, update_time FROM cell_registry")
+    @Select("SELECT id, name, value, min_value, max_value, step, create_time, update_time FROM cell_registry WHERE name = #{name}")
     @Results(value = {
             @Result(column = "id", property = "id"),
             @Result(column = "name", property = "name"),
@@ -61,6 +61,25 @@ public interface CellRegistryMapper {
             @Result(column = "update_time", property = "updateTime")
     })
     CellRegistryPO findByName(String name);
+
+    /**
+     * Find cell registry by cell's name.
+     *
+     * @param name cell name
+     * @return see ${@link CellRegistryPO}
+     */
+    @Select("SELECT id, name, value, min_value, max_value, step, create_time, update_time FROM cell_registry WHERE name = #{name} FOR UPDATE")
+    @Results(value = {
+            @Result(column = "id", property = "id"),
+            @Result(column = "name", property = "name"),
+            @Result(column = "value", property = "value"),
+            @Result(column = "min_value", property = "minValue"),
+            @Result(column = "max_value", property = "maxValue"),
+            @Result(column = "step", property = "step"),
+            @Result(column = "create_time", property = "createTime"),
+            @Result(column = "update_time", property = "updateTime")
+    })
+    CellRegistryPO lockFindByName(String name);
 
     /**
      * Find all cell registry name.

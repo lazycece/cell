@@ -56,6 +56,14 @@ public interface CellRegistryRepository {
     CellRegistry queryByName(String name);
 
     /**
+     * Query cell registry with lock.
+     *
+     * @param name name
+     * @return see ${@link CellRegistry}
+     */
+    CellRegistry lockQueryByName(String name);
+
+    /**
      * Update cell's value , and get cell registry information.
      * <p>using origin step value</p>
      *
