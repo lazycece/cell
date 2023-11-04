@@ -27,6 +27,11 @@ import com.lazycece.cell.specification.model.CellType;
 public class CellConfiguration {
 
     /**
+     * The cell type class
+     */
+    private Class<? extends CellType> cellTypeClass;
+
+    /**
      * The cell pattern
      *
      * @see CellPattern
@@ -34,19 +39,14 @@ public class CellConfiguration {
     private CellPattern pattern = CellPattern.DAY;
 
     /**
-     * The cell type class
-     */
-    private Class<? extends CellType> cellTypeClass;
-
-    /**
      * The data center
      */
-    private Integer dataCenter = 0;
+    private Integer dataCenter = 1;
 
     /**
      * The machine
      */
-    private Integer machine = 0;
+    private Integer machine = 1;
 
     /**
      * min value
@@ -63,20 +63,20 @@ public class CellConfiguration {
      */
     private Integer step = 6000;
 
-    public CellPattern getPattern() {
-        return pattern;
-    }
-
-    public void setPattern(CellPattern pattern) {
-        this.pattern = pattern;
-    }
-
     public Class<? extends CellType> getCellTypeClass() {
         return cellTypeClass;
     }
 
     public void setCellTypeClass(Class<? extends CellType> cellTypeClass) {
         this.cellTypeClass = cellTypeClass;
+    }
+
+    public CellPattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(CellPattern pattern) {
+        this.pattern = pattern;
     }
 
     public Integer getDataCenter() {
