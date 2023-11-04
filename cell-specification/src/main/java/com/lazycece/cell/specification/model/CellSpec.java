@@ -148,7 +148,7 @@ public class CellSpec {
     }
 
     private void expectedLength(String element, int len) {
-        if (element.length() <= len) {
+        if (element.length() > len) {
             throw new CellSpecException(String.format("cell element(%s) not expected length(%s)", element, len));
         }
     }
