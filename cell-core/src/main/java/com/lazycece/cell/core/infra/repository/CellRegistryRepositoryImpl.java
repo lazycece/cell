@@ -21,6 +21,8 @@ import com.lazycece.cell.core.infra.converter.CellRegistryConverter;
 import com.lazycece.cell.core.infra.dal.mapper.CellRegistryMapper;
 import com.lazycece.cell.core.infra.dal.po.CellRegistryPO;
 import com.lazycece.cell.core.model.CellRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -34,6 +36,7 @@ import java.util.List;
 @Repository
 public class CellRegistryRepositoryImpl implements CellRegistryRepository {
 
+    private Logger log = LoggerFactory.getLogger(CellRegistryRepositoryImpl.class);
     @Autowired
     private CellRegistryMapper cellRegistryMapper;
     @Autowired
@@ -90,15 +93,20 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
         return transactionTemplate.execute(status -> {
             int result = cellRegistryMapper.updateValueByName(name);
             CellAssert.isTrue(result > 0, "To update cell's value fail (%s)", name);
-            CellRegistry cellRegistry = queryByName(name);
-            CellAssert.notNull(cellRegistry, "Cell registry (%s) is null", name);
-            if (cellRegistry.needReset()) {
-                result = cellRegistryMapper.updateValueByReset(name);
-                CellAssert.isTrue(result > 0, "To reset cell's value fail (%s)", name);
-                return queryByName(name);
-            }
-            return cellRegistry;
+            return queryCellRegistryAndResetIfNeed(name);
         });
+    }
+
+    private CellRegistry queryCellRegistryAndResetIfNeed(String name) {
+        CellRegistry cellRegistry = queryByName(name);
+        CellAssert.notNull(cellRegistry, "Cell registry (%s) is null", name);
+        if (cellRegistry.needReset()) {
+            int result = cellRegistryMapper.updateValueByReset(name);
+            CellAssert.isTrue(result > 0, "To reset cell's value fail (%s)", name);
+            log.info("Cell registry ({}) reset successful. ", name);
+            return queryByName(name);
+        }
+        return cellRegistry;
     }
 
     /**
@@ -109,14 +117,7 @@ public class CellRegistryRepositoryImpl implements CellRegistryRepository {
         return transactionTemplate.execute(status -> {
             int result = cellRegistryMapper.updateValueByNameWithGivenStep(name, step);
             CellAssert.isTrue(result > 0, "To update cell's value fail (%s)", name);
-            CellRegistry cellRegistry = queryByName(name);
-            CellAssert.notNull(cellRegistry, "Cell registry is null (%s)", name);
-            if (cellRegistry.needReset()) {
-                result = cellRegistryMapper.updateValueByReset(name);
-                CellAssert.isTrue(result > 0, "To reset cell's value fail (%s)", name);
-                return queryByName(name);
-            }
-            return cellRegistry;
+            return queryCellRegistryAndResetIfNeed(name);
         });
     }
 }

@@ -103,7 +103,7 @@ public interface CellRegistryMapper {
      * @return result
      */
     @Update("UPDATE cell_registry SET value = value + #{step} WHERE name = #{name}")
-    int updateValueByNameWithGivenStep(String name, Integer step);
+    int updateValueByNameWithGivenStep(@Param("name") String name, @Param("step") Integer step);
 
     /**
      * Update by cell registry name, to reset value.

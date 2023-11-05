@@ -18,7 +18,7 @@ package com.lazycece.cell.core.buffer;
 
 import com.lazycece.cell.core.configuration.BufferConfiguration;
 import com.lazycece.cell.core.exception.CellAssert;
-import com.lazycece.cell.core.exception.CellException;
+import com.lazycece.cell.core.exception.CellTimeoutException;
 import com.lazycece.cell.core.infra.repository.CellRegistryRepository;
 import com.lazycece.cell.core.model.CellRegistry;
 import org.slf4j.Logger;
@@ -121,8 +121,9 @@ public class CellBufferManager implements InitializingBean {
      * @return value
      */
     private int getSequenceAndExpandIfNeed(CellBuffer cellBuffer) {
-        long time = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - time) < 50) {
+        long startTime = System.currentTimeMillis();
+        long intervalTime = 0;
+        while (intervalTime < 200) {
             // read lock
             Lock rLock = cellBuffer.getLock().readLock();
             rLock.lock();
@@ -162,8 +163,10 @@ public class CellBufferManager implements InitializingBean {
                     wLock.unlock();
                 }
             }
+            intervalTime = System.currentTimeMillis() - startTime;
         }
-        throw new CellException("Get sequence timeout.");
+        log.warn("Get cell sequence timeout ({}ms)", intervalTime);
+        throw new CellTimeoutException(String.format("Get sequence timeout(%sms)", intervalTime));
     }
 
     /**
@@ -229,6 +232,7 @@ public class CellBufferManager implements InitializingBean {
      */
     private void spinWaitAndSleep(CellBuffer cellBuffer) {
         int spinNum = 0;
+        long startTime = System.currentTimeMillis();
         while (cellBuffer.getExpanding().get()) {
             spinNum += 1;
             if (spinNum > 10000) {
@@ -240,6 +244,7 @@ public class CellBufferManager implements InitializingBean {
                 break;
             }
         }
+        log.debug("Get cell sequence thread spin and sleep wait time {}ms", System.currentTimeMillis() - startTime);
     }
 
     public void setBufferConfig(BufferConfiguration bufferConfig) {
