@@ -127,7 +127,7 @@ public class CellBufferManager implements InitializingBean {
      */
     private int getSequenceAndExpandIfNeed(CellBuffer cellBuffer) {
         long time = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - time) > 50) {
+        while ((System.currentTimeMillis() - time) < 50) {
             if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
                     && cellBuffer.getExpanding().compareAndSet(false, true)) {
                 asyncExpand(cellBuffer);
