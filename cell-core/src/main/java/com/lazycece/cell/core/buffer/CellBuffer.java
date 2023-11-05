@@ -20,7 +20,6 @@ import com.lazycece.cell.core.model.CellRegistry;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -32,11 +31,6 @@ public class CellBuffer {
      * cell name
      */
     private String name;
-
-    /**
-     * max value
-     */
-    private long maxValue;
 
     /**
      * current value
@@ -75,9 +69,9 @@ public class CellBuffer {
      */
     public void fillBuffer(CellRegistry cellRegistry) {
         name = cellRegistry.getName();
-        maxValue = cellRegistry.getMaxValue();
         int pos = refreshTimestamp == 0 ? pointer : nextPointer();
-        bufferValues[pos] = new BufferValue(new AtomicInteger(cellRegistry.getValue()), cellRegistry.getStep());
+        int maxValue = cellRegistry.getValue() + cellRegistry.getStep() - 1;
+        bufferValues[pos] = new BufferValue(new AtomicInteger(cellRegistry.getValue()), cellRegistry.getStep(), maxValue);
         refreshTimestamp = System.currentTimeMillis();
     }
 
@@ -92,8 +86,8 @@ public class CellBuffer {
             return false;
         }
         BufferValue bufferValue = currentBufferValue();
-        int value = bufferValue.getCurrentValue();
-        int step = bufferValue.getStep();
+        int value = bufferValue.currentValue();
+        int step = bufferValue.step();
         double percentage = value % step / (double) step;
         return percentage >= threshold;
     }
@@ -108,32 +102,11 @@ public class CellBuffer {
     }
 
     /**
-     * Get next value.
-     *
-     * @return next value
+     * Reset buffer value.
      */
-    public int nextValue() {
-        int nextVal = currentBufferValue().getAndIncrement();
-        if (nextVal > maxValue && nextReady) {
-            Lock wLock = lock.writeLock();
-            try {
-                if (nextReady) {
-                    resetPointer();
-                    setNextReady(false);
-                    nextVal = currentBufferValue().getAndIncrement();
-                }
-            } finally {
-                wLock.unlock();
-            }
-        }
-        return nextVal;
-    }
-
-    /**
-     * Reset value array pointer.
-     */
-    private void resetPointer() {
+    public void reset() {
         pointer = nextPointer();
+        setNextReady(false);
     }
 
     /**
@@ -149,12 +122,12 @@ public class CellBuffer {
         return name;
     }
 
-    public long getMaxValue() {
-        return maxValue;
-    }
-
     public long getRefreshTimestamp() {
         return refreshTimestamp;
+    }
+
+    public boolean isNextReady() {
+        return nextReady;
     }
 
     public void setNextReady(boolean nextReady) {

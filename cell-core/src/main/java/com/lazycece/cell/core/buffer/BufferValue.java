@@ -22,17 +22,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lazycece
  * @date 2023/9/11
  */
-public record BufferValue(AtomicInteger value, int step) {
+public record BufferValue(AtomicInteger value, int step, int maxValue) {
 
     public int getAndIncrement() {
         return value.getAndIncrement();
     }
 
-    public int getCurrentValue() {
+    public int currentValue() {
         return value.intValue();
-    }
-
-    public int getStep() {
-        return step;
     }
 }
