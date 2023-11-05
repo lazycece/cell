@@ -22,22 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lazycece
  * @date 2023/9/11
  */
-public class BufferValue {
-
-    /**
-     * current value
-     */
-    private final AtomicInteger value;
-
-    /**
-     * the step, that the interval size of the value
-     */
-    private final int step;
-
-    public BufferValue(AtomicInteger value, int step) {
-        this.value = value;
-        this.step = step;
-    }
+public record BufferValue(AtomicInteger value, int step) {
 
     public int getAndIncrement() {
         return value.getAndIncrement();
