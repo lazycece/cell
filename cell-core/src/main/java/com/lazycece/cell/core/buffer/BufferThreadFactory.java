@@ -30,6 +30,7 @@ public class BufferThreadFactory implements ThreadFactory {
     private final boolean daemon;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
 
+    @SuppressWarnings("removal")
     public BufferThreadFactory(String namePrefix, boolean daemon) {
         this.namePrefix = namePrefix;
         this.daemon = daemon;
