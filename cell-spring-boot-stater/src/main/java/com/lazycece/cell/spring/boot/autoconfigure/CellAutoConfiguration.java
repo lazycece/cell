@@ -73,6 +73,8 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
         bufferConfiguration.setThreadPoolCoreSize(buffer.getThreadPoolCoreSize());
         bufferConfiguration.setThreadPoolMaxSize(buffer.getThreadPoolMaxSize());
         bufferConfiguration.setThreadPoolKeepAliveTime(buffer.getThreadPoolKeepAliveTime());
+
+        log.info("Cell auto configuration successful.");
     }
 
     /**
