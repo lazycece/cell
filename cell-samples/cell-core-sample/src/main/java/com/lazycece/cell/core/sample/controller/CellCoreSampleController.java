@@ -55,11 +55,11 @@ public class CellCoreSampleController implements BeanPostProcessor, CommandLineR
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         run();
     }
 
-    private void run() throws InterruptedException {
+    private void run() {
         ExecutorService executorService = new ThreadPoolExecutor(
                 10,
                 10000,
