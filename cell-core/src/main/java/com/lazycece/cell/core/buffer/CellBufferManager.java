@@ -110,13 +110,8 @@ public class CellBufferManager implements InitializingBean {
         CellBuffer cellBuffer = CACHE_MAP.get(name);
         CellAssert.notNull(cellBuffer, "cell (%s) buffer is null.", name);
 
-        Lock rLock = cellBuffer.getLock().readLock();
-        rLock.lock();
-        try {
-            return getSequenceAndExpandIfNeed(cellBuffer);
-        } finally {
-            rLock.unlock();
-        }
+        return getSequenceAndExpandIfNeed(cellBuffer);
+
     }
 
     /**
@@ -128,15 +123,45 @@ public class CellBufferManager implements InitializingBean {
     private int getSequenceAndExpandIfNeed(CellBuffer cellBuffer) {
         long time = System.currentTimeMillis();
         while ((System.currentTimeMillis() - time) < 50) {
-            if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
-                    && cellBuffer.getExpanding().compareAndSet(false, true)) {
-                asyncExpand(cellBuffer);
+            // read lock
+            Lock rLock = cellBuffer.getLock().readLock();
+            rLock.lock();
+            try {
+                // may be expansion
+                if (cellBuffer.needExpansion(bufferConfig.getExpansionThreshold())
+                        && cellBuffer.getExpanding().compareAndSet(false, true)) {
+                    asyncExpand(cellBuffer);
+                }
+                // get buffer value
+                BufferValue bufferValue = cellBuffer.currentBufferValue();
+                int nextVal = bufferValue.getAndIncrement();
+                if (nextVal <= bufferValue.maxValue()) {
+                    return nextVal;
+                }
+            } finally {
+                rLock.unlock();
             }
-            int value = cellBuffer.nextValue();
-            if (value <= cellBuffer.getMaxValue()) {
-                return value;
-            }
+
+            // short wait
             spinWaitAndSleep(cellBuffer);
+
+            BufferValue bufferValue = cellBuffer.currentBufferValue();
+            int nextVal = bufferValue.getAndIncrement();
+            if (nextVal <= bufferValue.maxValue()) {
+                return nextVal;
+            }
+            // if next already
+            if (cellBuffer.isNextReady()) {
+                // lock and block other thread
+                Lock wLock = cellBuffer.getLock().writeLock();
+                try {
+                    if (cellBuffer.isNextReady()) {
+                        cellBuffer.reset();
+                    }
+                } finally {
+                    wLock.unlock();
+                }
+            }
         }
         throw new CellException("Get sequence timeout.");
     }
@@ -176,7 +201,7 @@ public class CellBufferManager implements InitializingBean {
         int maxStep = bufferConfig.getExpansionMaxStep();
         long bufferExpansionInterval = bufferConfig.getExpansionInterval();
 
-        int step = cellBuffer.currentBufferValue().getStep();
+        int step = cellBuffer.currentBufferValue().step();
         long interval = System.currentTimeMillis() - cellBuffer.getRefreshTimestamp();
 
         // Dynamically adjust the expansion speed based on actual consumption
