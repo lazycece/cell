@@ -16,9 +16,30 @@
 
 package com.lazycece.cell.core.buffer;
 
+import com.lazycece.cell.core.model.CellRegistry;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author lazycece
  * @date 2023/11/5
  */
 public class CellBufferTest {
+
+    @Test
+    public void testNeedExpansion() {
+        // case: next ready
+        CellBuffer cellBuffer = new CellBuffer();
+        cellBuffer.setNextReady(true);
+        assertThat(cellBuffer.needExpansion(0)).isFalse();
+
+        // case: match threshold
+        CellRegistry cellRegistry = new CellRegistry();
+        cellRegistry.setName("test");
+        cellRegistry.setValue(1000);
+        cellRegistry.setStep(100);
+        cellBuffer.fillBuffer(cellRegistry);
+        assertThat(cellBuffer.needExpansion(0.75)).isFalse();
+    }
 }
