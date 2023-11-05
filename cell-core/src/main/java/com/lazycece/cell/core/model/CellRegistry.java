@@ -59,7 +59,7 @@ public class CellRegistry {
         if (value >= maxValue) {
             return true;
         }
-        return (maxValue - value) / (double) step < 0.25;
+        return (maxValue - value) / (double) step <= 0.25;
     }
 
     public String getName() {
