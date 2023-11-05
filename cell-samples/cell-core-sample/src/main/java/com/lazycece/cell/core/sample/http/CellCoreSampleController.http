@@ -1,0 +1,3 @@
+### GET get sequence
+GET http://localhost:8080/cell-core/order/getSequence
+Accept: application/json
