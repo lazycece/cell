@@ -60,10 +60,10 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
     @Override
     public String generateId(CellType cellType) {
         CellAssert.notNull(cellType, "invalid cell type.");
-        int value = CellBufferManager.getInstance().getSequence(cellType.name());
+        int value = CellBufferManager.getInstance().getSequence(cellType.getName());
         Cell cell = CellBuilder.builder()
                 .pattern(configuration.getPattern())
-                .code(cellType.code())
+                .code(cellType.getCode())
                 .date(new Date())
                 .dataCenter(configuration.getDataCenter())
                 .machine(configuration.getMachine())
@@ -97,7 +97,7 @@ public class CellFacadeImpl implements CellFacade, InitializingBean {
                         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                             @Override
                             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(cellType.name());
+                                CellRegistry cellRegistry = cellRegistryRepository.lockQueryByName(cellType.getName());
                                 if (cellRegistry == null) {
                                     cellRegistry = CellRegistryFactory.build(cellType, configuration);
                                     cellRegistryRepository.save(cellRegistry);

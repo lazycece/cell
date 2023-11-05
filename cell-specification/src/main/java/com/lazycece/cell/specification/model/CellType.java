@@ -29,12 +29,12 @@ public interface CellType {
      *
      * @return name
      */
-    String name();
+    String getName();
 
     /**
      * cell code.
      *
      * @return code
      */
-    String code();
+    String getCode();
 }

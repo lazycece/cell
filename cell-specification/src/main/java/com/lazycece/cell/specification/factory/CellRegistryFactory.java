@@ -30,7 +30,7 @@ public class CellRegistryFactory {
 
     public static CellRegistry build(CellType cellType, CellConfiguration configuration) {
         CellRegistry cellRegistry = new CellRegistry();
-        cellRegistry.setName(cellType.name());
+        cellRegistry.setName(cellType.getName());
         cellRegistry.setValue(configuration.getMinValue());
         cellRegistry.setMinValue(configuration.getMinValue());
         cellRegistry.setMaxValue(configuration.getMaxValue());

@@ -1,0 +1,7 @@
+### GET get order id
+GET http://localhost:8080/cell-spec/orderId
+Accept: application/json
+
+### GET get goods id
+GET http://localhost:8080/cell-spec/goodsId
+Accept: application/json

@@ -14,19 +14,19 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.specification.sample;
+package com.lazycece.cell.spring.boot.sample;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@MapperScan(basePackages = {"com.lazycece.cell.core.infra.dal.mapper"})
+@MapperScan(basePackages = {"com.lazycece.cell"})
 @ComponentScan(basePackages = {"com.lazycece.cell"})
 @SpringBootApplication
-public class CellSpecificationSampleApplication {
+public class CellSpringSampleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CellSpecificationSampleApplication.class, args);
+        SpringApplication.run(CellSpringSampleApplication.class, args);
     }
 }

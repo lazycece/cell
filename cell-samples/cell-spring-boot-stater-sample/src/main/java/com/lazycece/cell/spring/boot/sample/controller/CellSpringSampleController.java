@@ -14,10 +14,12 @@
  *    limitations under the License.
  */
 
-package com.lazycece.cell.specification.sample.controller;
+package com.lazycece.cell.spring.boot.sample.controller;
 
+import com.lazycece.cell.specification.CellFacade;
+import com.lazycece.cell.spring.boot.sample.model.CellEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -25,10 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2023/11/6
  */
 @RestController
-public class CellSpecificationSampleController {
+public class CellSpringSampleController {
 
-    @GetMapping("/cell-spec/{name}/id")
-    public String getSequence(@PathVariable String name) {
-        return "";
+    @Autowired
+    private CellFacade cellFacade;
+
+    @GetMapping("/cell-spec/orderId")
+    public String getOrderId() {
+        return cellFacade.generateId(CellEnum.ORDER);
+    }
+
+    @GetMapping("/cell-spec/goodsId")
+    public String getGoodsId() {
+        return cellFacade.generateId(CellEnum.GOODS);
     }
 }

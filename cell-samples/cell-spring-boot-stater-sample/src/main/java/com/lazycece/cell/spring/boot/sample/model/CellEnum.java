@@ -14,10 +14,35 @@
  *    limitations under the License.
  */
 
+package com.lazycece.cell.spring.boot.sample.model;
+
+import com.lazycece.cell.specification.model.CellType;
+
 /**
- * Cell specification sample module.
- *
  * @author lazycece
- * @date 2023/11/5
+ * @date 2023/11/6
  */
-package com.lazycece.cell.specification.sample;
+public enum CellEnum implements CellType {
+
+    ORDER("order", "012"),
+    GOODS("goods", "013"),
+    ;
+
+    private final String name;
+    private final String code;
+
+    CellEnum(String name, String code) {
+        this.name = name;
+        this.code = code;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+}
