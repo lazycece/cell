@@ -19,11 +19,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <modules>
-        <module>cell-core-sample</module>
-        <module>cell-specification-sample</module>
-        <module>cell-sping-boot-stater-sample</module>
-    </modules>
     <parent>
         <groupId>com.lazycece.cell</groupId>
         <artifactId>cell-parent</artifactId>
@@ -32,6 +27,31 @@
     <artifactId>cell-samples</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+
+    <modules>
+        <module>cell-core-sample</module>
+        <module>cell-specification-sample</module>
+        <module>cell-spring-boot-stater-sample</module>
+    </modules>
+
+    <properties>
+        <druid-spring-boot-starter.version>1.2.15</druid-spring-boot-starter.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid-spring-boot-starter.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

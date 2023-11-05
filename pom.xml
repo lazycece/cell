@@ -75,10 +75,10 @@
         <flatten.maven.plugin.version>1.2.7</flatten.maven.plugin.version>
 
         <!-- Opensource Package -->
-        <spring.boot.version>2.7.0</spring.boot.version>
+        <spring.boot.version>3.1.5</spring.boot.version>
         <slf4j.version>2.0.5</slf4j.version>
         <mybatis.version>3.5.13</mybatis.version>
-        <mybatis-spring.version>1.2.5</mybatis-spring.version>
+        <mybatis-spring.version>3.0.2</mybatis-spring.version>
     </properties>
 
     <dependencyManagement>
