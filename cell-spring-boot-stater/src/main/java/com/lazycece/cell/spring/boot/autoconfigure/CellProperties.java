@@ -16,7 +16,8 @@
 
 package com.lazycece.cell.spring.boot.autoconfigure;
 
-import com.lazycece.cell.specification.configuration.CellConfiguration;
+import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
+import com.lazycece.cell.specification.model.CellType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -26,14 +27,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "cell")
 public class CellProperties {
 
-    private CellConfiguration specification;
+    /**
+     * The cell type class
+     */
+    private Class<? extends CellType> cellTypeClass;
+
+    /**
+     * The cell specification properties configuration
+     */
+    private CellSpecProperties specification;
+
+    /**
+     * The cell buffer properties
+     */
     private CellBufferProperties buffer;
 
-    public CellConfiguration getSpecification() {
+    public Class<? extends CellType> getCellTypeClass() {
+        return cellTypeClass;
+    }
+
+    public void setCellTypeClass(Class<? extends CellType> cellTypeClass) {
+        this.cellTypeClass = cellTypeClass;
+    }
+
+    public CellSpecProperties getSpecification() {
         return specification;
     }
 
-    public void setSpecification(CellConfiguration specification) {
+    public void setSpecification(CellSpecProperties specification) {
         this.specification = specification;
     }
 
@@ -43,6 +64,9 @@ public class CellProperties {
 
     public void setBuffer(CellBufferProperties buffer) {
         this.buffer = buffer;
+    }
+
+    public static class CellSpecProperties extends CellSpecConfiguration {
     }
 
     public static class CellBufferProperties {
