@@ -20,7 +20,7 @@ import com.lazycece.cell.core.buffer.CellBufferManager;
 import com.lazycece.cell.core.configuration.BufferConfiguration;
 import com.lazycece.cell.core.exception.CellAssert;
 import com.lazycece.cell.specification.CellFacade;
-import com.lazycece.cell.specification.configuration.CellConfiguration;
+import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
 import com.lazycece.cell.specification.impl.CellFacadeImpl;
 import com.lazycece.cell.specification.model.CellSpec;
 import org.slf4j.Logger;
@@ -54,11 +54,13 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
      */
     @Override
     public void afterPropertiesSet() {
+        // check cell
+        CellAssert.notNull(cellProperties.getCellTypeClass(), "Cell check: cellTypeClass is null");
+
         // check specification
-        CellConfiguration spec = cellProperties.getSpecification();
-        CellAssert.notNull(spec.getCellTypeClass(), "Cell specification check: cellTypeClass is null");
+        CellSpecConfiguration spec = cellProperties.getSpecification();
         CellAssert.isTrue(spec.getDataCenter() < Math.pow(10, CellSpec.CELL_DATA_CENTER_LEN), "Cell specification check: dataCenter length limit %s", CellSpec.CELL_DATA_CENTER_LEN);
-        CellAssert.isTrue(spec.getDataCenter() < Math.pow(10, CellSpec.CELL_MACHINE_LEN), "Cell specification check: machine length limit %s", CellSpec.CELL_MACHINE_LEN);
+        CellAssert.isTrue(spec.getMachine() < Math.pow(10, CellSpec.CELL_MACHINE_LEN), "Cell specification check: machine length limit %s", CellSpec.CELL_MACHINE_LEN);
         CellAssert.isTrue(spec.getMinValue() < spec.getMaxValue(), "Cell specification check: limit minValue<maxValue");
         CellAssert.isTrue(spec.getStep() < spec.getMaxValue() && spec.getStep() > spec.getMinValue(), "Cell specification check: limit minValue<step<maxValue");
 
