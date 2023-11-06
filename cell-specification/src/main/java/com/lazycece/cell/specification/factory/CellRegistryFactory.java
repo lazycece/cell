@@ -17,7 +17,7 @@
 package com.lazycece.cell.specification.factory;
 
 import com.lazycece.cell.core.model.CellRegistry;
-import com.lazycece.cell.specification.configuration.CellConfiguration;
+import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
 import com.lazycece.cell.specification.model.CellType;
 
 import java.util.Date;
@@ -28,7 +28,7 @@ import java.util.Date;
  */
 public class CellRegistryFactory {
 
-    public static CellRegistry build(CellType cellType, CellConfiguration configuration) {
+    public static CellRegistry build(CellType cellType, CellSpecConfiguration configuration) {
         CellRegistry cellRegistry = new CellRegistry();
         cellRegistry.setName(cellType.getName());
         cellRegistry.setValue(configuration.getMinValue());
