@@ -46,8 +46,12 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
 
     private final Logger log = LoggerFactory.getLogger(CellAutoConfiguration.class);
     private BufferConfiguration bufferConfiguration;
-    @Autowired
     private CellProperties cellProperties;
+
+    @Autowired
+    public CellAutoConfiguration(CellProperties cellProperties) {
+        this.cellProperties = cellProperties;
+    }
 
     /**
      * @see InitializingBean#afterPropertiesSet()
