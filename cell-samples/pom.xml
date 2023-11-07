@@ -30,7 +30,7 @@
 
     <modules>
         <module>cell-core-sample</module>
-        <module>cell-spring-boot-stater-sample</module>
+        <module>cell-spring-boot-starter-sample</module>
     </modules>
 
     <properties>
