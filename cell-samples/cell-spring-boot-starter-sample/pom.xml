@@ -25,12 +25,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cell-sping-boot-stater-sample</artifactId>
+    <artifactId>cell-spring-boot-starter-sample</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.lazycece.cell</groupId>
-            <artifactId>cell-spring-boot-stater</artifactId>
+            <artifactId>cell-spring-boot-starter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
