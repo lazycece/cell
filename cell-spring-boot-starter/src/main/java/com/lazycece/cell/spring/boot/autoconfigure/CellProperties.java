@@ -16,7 +16,7 @@
 
 package com.lazycece.cell.spring.boot.autoconfigure;
 
-import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
+import com.lazycece.cell.specification.model.CellPattern;
 import com.lazycece.cell.specification.model.CellType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -30,7 +30,8 @@ import java.time.Duration;
 public class CellProperties {
 
     /**
-     * The cell type class
+     * The cell type class, can be null.
+     * <p>If not null, will be registered automatically</p>
      */
     private Class<? extends CellType> cellTypeClass;
 
@@ -68,7 +69,87 @@ public class CellProperties {
         this.buffer = buffer;
     }
 
-    public static class CellSpecProperties extends CellSpecConfiguration {
+    public static class CellSpecProperties {
+
+        /**
+         * The cell pattern
+         *
+         * @see CellPattern
+         */
+        private CellPattern pattern = CellPattern.DAY;
+
+        /**
+         * The data center
+         */
+        private Integer dataCenter = 1;
+
+        /**
+         * The machine
+         */
+        private Integer machine = 1;
+
+        /**
+         * min value
+         */
+        private Integer minValue = 0;
+
+        /**
+         * max value
+         */
+        private Integer maxValue = Integer.MAX_VALUE;
+
+        /**
+         * the step, that the interval size of the value.
+         */
+        private Integer step = 6000;
+
+        public CellPattern getPattern() {
+            return pattern;
+        }
+
+        public void setPattern(CellPattern pattern) {
+            this.pattern = pattern;
+        }
+
+        public Integer getDataCenter() {
+            return dataCenter;
+        }
+
+        public void setDataCenter(Integer dataCenter) {
+            this.dataCenter = dataCenter;
+        }
+
+        public Integer getMachine() {
+            return machine;
+        }
+
+        public void setMachine(Integer machine) {
+            this.machine = machine;
+        }
+
+        public Integer getMinValue() {
+            return minValue;
+        }
+
+        public void setMinValue(Integer minValue) {
+            this.minValue = minValue;
+        }
+
+        public Integer getMaxValue() {
+            return maxValue;
+        }
+
+        public void setMaxValue(Integer maxValue) {
+            this.maxValue = maxValue;
+        }
+
+        public Integer getStep() {
+            return step;
+        }
+
+        public void setStep(Integer step) {
+            this.step = step;
+        }
     }
 
     public static class CellBufferProperties {
