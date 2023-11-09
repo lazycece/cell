@@ -46,6 +46,7 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
     private final Logger log = LoggerFactory.getLogger(CellAutoConfiguration.class);
     private final CellProperties cellProperties;
     private BufferConfiguration bufferConfiguration;
+    private CellSpecConfiguration specConfiguration;
 
     @Autowired
     public CellAutoConfiguration(CellProperties cellProperties) {
@@ -58,11 +59,20 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
     @Override
     public void afterPropertiesSet() {
         // check specification
-        CellSpecConfiguration spec = cellProperties.getSpecification();
+        CellProperties.CellSpecProperties spec = cellProperties.getSpecification();
         CellAssert.isTrue(spec.getDataCenter() < Math.pow(10, CellSpec.CELL_DATA_CENTER_LEN), "Cell specification check: dataCenter length limit %s", CellSpec.CELL_DATA_CENTER_LEN);
         CellAssert.isTrue(spec.getMachine() < Math.pow(10, CellSpec.CELL_MACHINE_LEN), "Cell specification check: machine length limit %s", CellSpec.CELL_MACHINE_LEN);
         CellAssert.isTrue(spec.getMinValue() < spec.getMaxValue(), "Cell specification check: limit minValue<maxValue");
         CellAssert.isTrue(spec.getStep() < spec.getMaxValue() && spec.getStep() > spec.getMinValue(), "Cell specification check: limit minValue<step<maxValue");
+
+        // assemble specification configuration
+        specConfiguration = new CellSpecConfiguration();
+        specConfiguration.setPattern(spec.getPattern());
+        specConfiguration.setDataCenter(spec.getDataCenter());
+        specConfiguration.setMachine(spec.getMachine());
+        specConfiguration.setMinValue(spec.getMinValue());
+        specConfiguration.setMaxValue(spec.getMaxValue());
+        specConfiguration.setStep(spec.getStep());
 
         // assemble buffer configuration
         CellProperties.CellBufferProperties buffer = cellProperties.getBuffer();
@@ -92,7 +102,7 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
     private void cellFacadeInterceptor(Object bean) {
         if (bean instanceof CellFacadeImpl cellFacade) {
             cellFacade.setCellTypeClass(cellProperties.getCellTypeClass());
-            cellFacade.setConfiguration(cellProperties.getSpecification());
+            cellFacade.setConfiguration(specConfiguration);
             log.info("Cell auto configuration: set cell specification configuration.");
         }
     }
