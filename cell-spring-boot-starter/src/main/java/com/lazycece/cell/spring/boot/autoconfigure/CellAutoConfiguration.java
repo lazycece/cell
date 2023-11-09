@@ -19,17 +19,16 @@ package com.lazycece.cell.spring.boot.autoconfigure;
 import com.lazycece.cell.core.buffer.CellBufferManager;
 import com.lazycece.cell.core.configuration.BufferConfiguration;
 import com.lazycece.cell.core.exception.CellAssert;
-import com.lazycece.cell.specification.CellFacade;
 import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
 import com.lazycece.cell.specification.impl.CellFacadeImpl;
 import com.lazycece.cell.specification.model.CellSpec;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,14 +38,14 @@ import org.springframework.context.annotation.Configuration;
  * @date 2023/10/31
  */
 @Configuration
+@MapperScan(basePackages = {"com.lazycece.cell.core.infra.dal.mapper"})
 @ComponentScan(basePackages = {"com.lazycece.cell"})
 @EnableConfigurationProperties({CellProperties.class})
-@AutoConfigureBefore(value = {CellFacade.class, CellBufferManager.class})
 public class CellAutoConfiguration implements BeanPostProcessor, InitializingBean {
 
     private final Logger log = LoggerFactory.getLogger(CellAutoConfiguration.class);
+    private final CellProperties cellProperties;
     private BufferConfiguration bufferConfiguration;
-    private CellProperties cellProperties;
 
     @Autowired
     public CellAutoConfiguration(CellProperties cellProperties) {
@@ -58,9 +57,6 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
      */
     @Override
     public void afterPropertiesSet() {
-        // check cell
-        CellAssert.notNull(cellProperties.getCellTypeClass(), "Cell check: cellTypeClass is null");
-
         // check specification
         CellSpecConfiguration spec = cellProperties.getSpecification();
         CellAssert.isTrue(spec.getDataCenter() < Math.pow(10, CellSpec.CELL_DATA_CENTER_LEN), "Cell specification check: dataCenter length limit %s", CellSpec.CELL_DATA_CENTER_LEN);
@@ -73,12 +69,12 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
         int multiple = (int) Math.pow(2, buffer.getExpansionStepElasticityTime());
         bufferConfiguration = new BufferConfiguration();
         bufferConfiguration.setExpansionThreshold(buffer.getExpansionThreshold());
-        bufferConfiguration.setExpansionInterval(buffer.getExpansionInterval());
+        bufferConfiguration.setExpansionInterval(buffer.getExpansionInterval().toMillis());
         bufferConfiguration.setExpansionMinStep(spec.getStep() / multiple);
         bufferConfiguration.setExpansionMaxStep(spec.getStep() * multiple);
         bufferConfiguration.setThreadPoolCoreSize(buffer.getThreadPoolCoreSize());
         bufferConfiguration.setThreadPoolMaxSize(buffer.getThreadPoolMaxSize());
-        bufferConfiguration.setThreadPoolKeepAliveTime(buffer.getThreadPoolKeepAliveTime());
+        bufferConfiguration.setThreadPoolKeepAliveTime(buffer.getThreadPoolKeepAliveTime().toSeconds());
 
         log.info("Cell auto configuration successful.");
     }
@@ -95,6 +91,7 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
 
     private void cellFacadeInterceptor(Object bean) {
         if (bean instanceof CellFacadeImpl cellFacade) {
+            cellFacade.setCellTypeClass(cellProperties.getCellTypeClass());
             cellFacade.setConfiguration(cellProperties.getSpecification());
             log.info("Cell auto configuration: set cell specification configuration.");
         }

@@ -20,6 +20,8 @@ import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
 import com.lazycece.cell.specification.model.CellType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+
 /**
  * @author lazycece
  * @date 2023/11/4
@@ -35,12 +37,12 @@ public class CellProperties {
     /**
      * The cell specification properties configuration
      */
-    private CellSpecProperties specification;
+    private CellSpecProperties specification = new CellSpecProperties();
 
     /**
      * The cell buffer properties
      */
-    private CellBufferProperties buffer;
+    private CellBufferProperties buffer = new CellBufferProperties();
 
     public Class<? extends CellType> getCellTypeClass() {
         return cellTypeClass;
@@ -90,7 +92,7 @@ public class CellProperties {
          * <li>then: interval=step/qps=600s </li>
          * </p>
          */
-        private long expansionInterval = 10 * 60 * 1000;
+        private Duration expansionInterval = Duration.ofMinutes(10);
 
         /**
          * Cell buffer thread pool core size, default value is 5
@@ -105,7 +107,7 @@ public class CellProperties {
         /**
          * Cell buffer thread pool keep alive time, default value is 60s
          */
-        private long threadPoolKeepAliveTime = 60L;
+        private Duration threadPoolKeepAliveTime = Duration.ofSeconds(60);
 
         public double getExpansionThreshold() {
             return expansionThreshold;
@@ -123,11 +125,11 @@ public class CellProperties {
             this.expansionStepElasticityTime = expansionStepElasticityTime;
         }
 
-        public long getExpansionInterval() {
+        public Duration getExpansionInterval() {
             return expansionInterval;
         }
 
-        public void setExpansionInterval(long expansionInterval) {
+        public void setExpansionInterval(Duration expansionInterval) {
             this.expansionInterval = expansionInterval;
         }
 
@@ -147,11 +149,11 @@ public class CellProperties {
             this.threadPoolMaxSize = threadPoolMaxSize;
         }
 
-        public long getThreadPoolKeepAliveTime() {
+        public Duration getThreadPoolKeepAliveTime() {
             return threadPoolKeepAliveTime;
         }
 
-        public void setThreadPoolKeepAliveTime(long threadPoolKeepAliveTime) {
+        public void setThreadPoolKeepAliveTime(Duration threadPoolKeepAliveTime) {
             this.threadPoolKeepAliveTime = threadPoolKeepAliveTime;
         }
     }
