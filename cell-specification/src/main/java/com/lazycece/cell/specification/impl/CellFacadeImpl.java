@@ -108,6 +108,7 @@ public class CellFacadeImpl implements CellFacade, ApplicationListener<ContextRe
                             }
                         })
                 );
+        log.info("Cell register automatically finish.");
     }
 
     public void setCellTypeClass(Class<? extends CellType> cellTypeClass) {

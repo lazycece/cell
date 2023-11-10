@@ -18,10 +18,8 @@ package com.lazycece.cell.spring.boot.autoconfigure;
 
 import com.lazycece.cell.core.buffer.CellBufferManager;
 import com.lazycece.cell.core.configuration.BufferConfiguration;
-import com.lazycece.cell.core.exception.CellAssert;
 import com.lazycece.cell.specification.configuration.CellSpecConfiguration;
 import com.lazycece.cell.specification.impl.CellFacadeImpl;
-import com.lazycece.cell.specification.model.CellSpec;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,34 +56,10 @@ public class CellAutoConfiguration implements BeanPostProcessor, InitializingBea
      */
     @Override
     public void afterPropertiesSet() {
-        // check specification
         CellProperties.CellSpecProperties spec = cellProperties.getSpecification();
-        CellAssert.isTrue(spec.getDataCenter() < Math.pow(10, CellSpec.CELL_DATA_CENTER_LEN), "Cell specification check: dataCenter length limit %s", CellSpec.CELL_DATA_CENTER_LEN);
-        CellAssert.isTrue(spec.getMachine() < Math.pow(10, CellSpec.CELL_MACHINE_LEN), "Cell specification check: machine length limit %s", CellSpec.CELL_MACHINE_LEN);
-        CellAssert.isTrue(spec.getMinValue() < spec.getMaxValue(), "Cell specification check: limit minValue<maxValue");
-        CellAssert.isTrue(spec.getStep() < spec.getMaxValue() && spec.getStep() > spec.getMinValue(), "Cell specification check: limit minValue<step<maxValue");
-
-        // assemble specification configuration
-        specConfiguration = new CellSpecConfiguration();
-        specConfiguration.setPattern(spec.getPattern());
-        specConfiguration.setDataCenter(spec.getDataCenter());
-        specConfiguration.setMachine(spec.getMachine());
-        specConfiguration.setMinValue(spec.getMinValue());
-        specConfiguration.setMaxValue(spec.getMaxValue());
-        specConfiguration.setStep(spec.getStep());
-
-        // assemble buffer configuration
+        specConfiguration = ConfigurationHelper.assembleCellSpecConfiguration(spec);
         CellProperties.CellBufferProperties buffer = cellProperties.getBuffer();
-        int multiple = (int) Math.pow(2, buffer.getExpansionStepElasticityTime());
-        bufferConfiguration = new BufferConfiguration();
-        bufferConfiguration.setExpansionThreshold(buffer.getExpansionThreshold());
-        bufferConfiguration.setExpansionInterval(buffer.getExpansionInterval().toMillis());
-        bufferConfiguration.setExpansionMinStep(spec.getStep() / multiple);
-        bufferConfiguration.setExpansionMaxStep(spec.getStep() * multiple);
-        bufferConfiguration.setThreadPoolCoreSize(buffer.getThreadPoolCoreSize());
-        bufferConfiguration.setThreadPoolMaxSize(buffer.getThreadPoolMaxSize());
-        bufferConfiguration.setThreadPoolKeepAliveTime(buffer.getThreadPoolKeepAliveTime().toSeconds());
-
+        bufferConfiguration = ConfigurationHelper.assembleBufferConfiguration(spec, buffer);
         log.info("Cell auto configuration successful.");
     }
 
