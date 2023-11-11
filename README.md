@@ -48,6 +48,10 @@ CREATE TABLE IF NOT EXISTS `cell_registry`(
     UNIQUE KEY `uk_name` (`name`)
  ) COMMENT 'cell registry'
 ;
+
+insert into cell_registry(`name`,`value`,`min_value`,`max_value`,`step`,`create_time`,`update_time`)
+values("order",0,0,100000,100,now(),now())
+;
 ```
 
 ### Coding
