@@ -1,6 +1,11 @@
 # Cell
+[![Maven Central](https://img.shields.io/maven-central/v/com.lazycece.cell/cell-spring-boot-starter)](https://search.maven.org/search?q=cell-spring-boot-starter)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/lazycece/cell/releases)
 
-Cell 是一个分布式ID生成框架，可开箱即用，亦可根据Cell的内核进行自定义扩展ID的规范。
+Cell（细胞）是一个高性能的分布式ID生成框架，提供规范性、可理解性的ID生成策略，开箱即用。
+在现有提供的策略之外，亦可自定义ID规范并利用Cell的内核扩展出符合诉求的ID生成器。
+
 
 ## 环境依赖
 
@@ -45,7 +50,7 @@ public class CellSpringSampleController {
 
 Cell 分三个模块：
 
-- cell-core: Cel内核，用于生成唯一的序列号
+- cell-core: Cell内核，用于生成唯一的序列号
 - cell-specification: Cell规范，用于定义并生成ID
 - cell-spring-boot-starter: Cell启动器，用于Spring Boot 项目的快速引入，并进行配置扩展
 
@@ -73,17 +78,17 @@ Cell的ID规范由时间、领域标识码、数据中心、机房和唯一序�
 
 天级别模式，cell-id的长度为24位：
 - 组件构成：日期（8）+ 领域标识码（3）+ 数据中心（1）+ 机房（2）+ 序列号（10）
-- ID样例：[20231004] [001] [1] [01] [2147483647]
+- ID样例：[20231004] [101] [1] [01] [1314230822]
 - 支持最大qps = Integer.MAX_VALUE/24/60/60 = 24855
 
 小时级别模式，cell-id的长度为26位：
 - 组件构成：日期（8）+ 领域标识码（3）+ 数据中心（1）+ 机房（2）+ 小时（2）+ 序列号（10）
-- ID样例： [20231004] [001] [0] [01] [11] [2147483647]
+- ID样例： [20231004] [101] [1] [01] [11] [1314230822]
 - 支持最大qps = Integer.MAX_VALUE/60/60 = 596523
 
 分钟级别模式，cell-id的长度为28位：
 - 组件构成：日期（8）+ 领域标识码（3）+ 数据中心（1）+ 机房（2）+ 小时（2）+ 分钟（2）+ 序列号（10）
-- ID样例： [20231004] [001] [0] [01] [11] [58] [2147483647]
+- ID样例： [20231004] [101] [1] [01] [11] [58] [1314230822]
 - 支持最大qps = Integer.MAX_VALUE/60 = 35791394
 
 

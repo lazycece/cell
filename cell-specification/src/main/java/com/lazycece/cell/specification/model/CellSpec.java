@@ -31,7 +31,7 @@ import java.util.Date;
  * The day pattern, length of cell-id is 24, as follow:
  * <ul>
  * <li>component: date(8) + code(3) + center(1) + machine(2) + sequence(10)</li>
- * <li>example: [20231004] [001] [1] [01] [2147483647]</li>
+ * <li>example: [20231004] [101] [1] [01] [1314230822]</li>
  * <li>support max qps = <code>Integer.MAX_VALUE</code>/24/60/60 = 24855 </li>
  * </ul>
  * </p>
@@ -39,7 +39,7 @@ import java.util.Date;
  * The hour pattern, length of cell-id is 26, as follow:
  * <ul>
  * <li>component: date(8) + code(3) + center(1) + machine(2) + hour(2) + sequence(10)</li>
- * <li>example: [20231004] [001] [0] [01] [11] [2147483647]</li>
+ * <li>example: [20231004] [101] [1] [01] [11] [1314230822]</li>
  * <li>support max qps = <code>Integer.MAX_VALUE</code>/60/60 = 596523 </li>
  * </ul>
  * </p>
@@ -47,7 +47,7 @@ import java.util.Date;
  * The minute pattern, length of cell-id is 28, as follow:
  * <ul>
  * <li>component: date(8) + code(3) + center(1) + machine(2) + hour(2) + minute(2) + sequence(10)</li>
- * <li>example: [20231004] [001] [0] [01] [11] [58] [2147483647]</li>
+ * <li>example: [20231004] [101] [1] [01] [11] [58] [1314230822]</li>
  * <li>support max qps = <code>Integer.MAX_VALUE</code>/60 = 35791394 </li>
  * </ul>
  * </p>
