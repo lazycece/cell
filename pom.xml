@@ -55,7 +55,7 @@
 
     <properties>
         <!-- Project revision -->
-        <revision>1.0.0-SNAPSHOT</revision>
+        <revision>1.0.0</revision>
 
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
