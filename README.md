@@ -1,4 +1,4 @@
-# Cell
+# Cell ( 细胞 )
 [![Maven Central](https://img.shields.io/maven-central/v/com.lazycece.cell/cell-spring-boot-starter)](https://search.maven.org/search?q=cell-spring-boot-starter)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![GitHub release](https://img.shields.io/badge/release-download-orange.svg)](https://github.com/lazycece/cell/releases)
@@ -6,6 +6,8 @@
 Cell（细胞）是一个高性能的分布式ID生成框架，提供规范性、可理解性的ID生成策略，开箱即用。
 在现有提供的策略之外，亦可自定义ID规范并利用Cell的内核扩展出符合诉求的ID生成器。
 
+## Architecture
+![cell-architecture](/document/design/cell-archirecture.png)
 
 ## 环境依赖
 
