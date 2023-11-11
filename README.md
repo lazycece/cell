@@ -6,9 +6,6 @@
 Cell（细胞）是一个高性能的分布式ID生成框架，提供规范性、可理解性的ID生成策略，开箱即用。
 在现有提供的策略之外，亦可自定义ID规范并利用Cell的内核扩展出符合诉求的ID生成器。
 
-## Architecture
-![cell-architecture](/document/design/cell-archirecture.png)
-
 ## 环境依赖
 
 Cell 环境依赖如下:
@@ -55,6 +52,10 @@ Cell 分三个模块：
 - cell-core: Cell内核，用于生成唯一的序列号
 - cell-specification: Cell规范，用于定义并生成ID
 - cell-spring-boot-starter: Cell启动器，用于Spring Boot 项目的快速引入，并进行配置扩展
+
+## Cell Architecture
+![cell-architecture](/document/design/cell-archirecture.png)
+
 
 ### Cell Core
 Cell内核是利用数据库注册模式来生成唯一序列号。 Cell注册表模型如下：
