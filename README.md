@@ -30,7 +30,7 @@ Cell 环境依赖如下:
 </dependency>
 ```
 
-### Cell注册
+### 脚本执行
 
 在数据库中执行[脚本](/document/script/cell_registry.sql)创建注册表，并注册相关内容:
 
