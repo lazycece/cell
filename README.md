@@ -6,6 +6,10 @@
 Cell（细胞）是一个高性能的分布式ID生成框架，提供规范性、可理解性的ID生成策略，开箱即用。
 在现有提供的策略之外，亦可自定义ID规范并利用Cell的内核扩展出符合诉求的ID生成器。
 
+## Architecture
+![cell-architecture](/document/design/cell-archirecture.png)
+
+
 ## 环境依赖
 
 Cell 环境依赖如下:
@@ -17,6 +21,7 @@ Cell 环境依赖如下:
 ## 快速开始
 
 ### Maven Dependency
+
 ```xml
 <dependency>
     <groupId>com.lazycece.cell</groupId>
@@ -26,8 +31,24 @@ Cell 环境依赖如下:
 ```
 
 ### Cell注册
-在数据库中执行[脚本](/document/script/cell_registry.sql):
 
+在数据库中执行[脚本](/document/script/cell_registry.sql)创建注册表，并注册相关内容:
+
+```sql
+CREATE TABLE IF NOT EXISTS `cell_registry`(
+    `id` INT UNSIGNED AUTO_INCREMENT COMMENT 'pk id',
+    `name` VARCHAR(255) NOT NULL COMMENT 'cell name',
+    `value` INT NOT NULL COMMENT 'current value',
+    `min_value` INT NOT NULL COMMENT 'min value',
+    `max_value` INT NOT NULL COMMENT 'max value',
+    `step` INT NOT NULL COMMENT 'step',
+    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_name` (`name`)
+ ) COMMENT 'cell registry'
+;
+```
 
 ### Coding
 
@@ -45,6 +66,9 @@ public class CellSpringSampleController {
 }
 ```
 
+更多样例详情可查看 [cell-samples](/cell-samples)
+
+
 ## Cell 简介
 
 Cell 分三个模块：
@@ -52,10 +76,6 @@ Cell 分三个模块：
 - cell-core: Cell内核，用于生成唯一的序列号
 - cell-specification: Cell规范，用于定义并生成ID
 - cell-spring-boot-starter: Cell启动器，用于Spring Boot 项目的快速引入，并进行配置扩展
-
-## Cell Architecture
-![cell-architecture](/document/design/cell-archirecture.png)
-
 
 ### Cell Core
 Cell内核是利用数据库注册模式来生成唯一序列号。 Cell注册表模型如下：
@@ -72,7 +92,7 @@ Cell内核是利用数据库注册模式来生成唯一序列号。 Cell注册�
 |create_time |TIMESTAMP |创建时间 |
 |update_time |TIMESTAMP |更新时间 |
 
-Cell内核通过缓存来控制对外提供序列号值
+Cell内核通过缓存来控制对外提供序列号值，确保获取序列号的唯一性。可引用该模块并结合自己业务中ID的规范来定制化出更具个性化的ID值。
 
 ### Cell Specification
 
@@ -114,24 +134,6 @@ Cell 在 Spring Boot 项目中使用时，支持直接在配置文件中对Cell�
 |cell.buffer.thread-pool-core-size |5 |buffer的核心线程数 |
 |cell.buffer.thread-pool-max-size |Integer.MAX_VALUE |buffer的最大线程数 |
 |cell.buffer.thread-pool-keep-alive-time |60s |线程活跃时间 |
-
-在application.properties中配置样例如下:
-```properties
-# cell
-cell.cell-type-class=com.lazycece.cell.spring.boot.sample.model.CellEnum
-cell.specification.pattern=hour
-cell.specification.data-center=5
-cell.specification.machine=10
-cell.specification.min-value=12121
-cell.specification.max-value=121210000
-cell.specification.step=10000
-cell.buffer.expansion-step-elasticity-time=4
-cell.buffer.expansion-threshold=0.6
-cell.buffer.expansion-interval=20m
-cell.buffer.thread-pool-max-size=100
-cell.buffer.thread-pool-core-size=10
-cell.buffer.thread-pool-keep-alive-time=60s
-```
 
 ## License
 
